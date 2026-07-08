@@ -33,11 +33,6 @@ export const SECTIONS: Section[] = [
     icon: "Shield",
     items: [
       {
-        key: "jaula_antivuelco",
-        label: "Jaula Antivuelco (interna/externa)",
-        hint: "Fotografiar puntos de anclaje al chasis, soldaduras con grietas o deformaciones visibles.",
-      },
-      {
         key: "airbags",
         label: "Airbags (frontales y laterales)",
         hint: "Fotografiar el testigo (luz de advertencia) encendido en el tablero de instrumentos.",
@@ -46,11 +41,6 @@ export const SECTIONS: Section[] = [
         key: "cinturones",
         label: "Cinturones de seguridad (3 puntos / todos asientos)",
         hint: "Capturar el desgaste de la cinta, hebillas dañadas o indicador de pretensor activado.",
-      },
-      {
-        key: "laminas_seguridad",
-        label: "Láminas de seguridad en vidrios laterales",
-        hint: "Fotografiar burbujas, desprendimientos o trizaduras que comprometan la cohesión del cristal.",
       },
       {
         key: "direccion",
@@ -75,9 +65,9 @@ export const SECTIONS: Section[] = [
         hint: "Evidencia de falta de presión (fotografiar manómetro o llanta visiblemente desinflada).",
       },
       {
-        key: "indicadores_torque",
-        label: "Indicadores de torque en tuercas de ruedas",
-        hint: "Fotografiar la ausencia o desalineación de los indicadores plásticos de torque en las ruedas.",
+        key: "traba_tuercas",
+        label: "Traba tuercas",
+        hint: "Verificar presencia y correcta instalación de las traba tuercas.",
       },
       {
         key: "rueda_repuesto",
@@ -92,24 +82,14 @@ export const SECTIONS: Section[] = [
     icon: "Eye",
     items: [
       {
-        key: "pertiga",
-        label: "Pértiga con luz LED y bandera (mín. 3m)",
-        hint: "Fotografiar la ampolleta/LED quemada o daños en la base de sujeción y estado de la bandera.",
-      },
-      {
-        key: "baliza",
-        label: "Baliza estroboscópica color ámbar",
-        hint: "Capturar daños en el domo o evidencia visual de que no emite destellos.",
-      },
-      {
         key: "alarma_retroceso",
         label: "Alarma de retroceso audible",
         hint: "Indicar en la descripción si la alarma no suena al enganchar reversa.",
       },
       {
         key: "encendido_luces",
-        label: "Encendido automático de luces",
-        hint: "Capturar el tablero indicando que las luces no se activan automáticamente.",
+        label: "Luces funcionando",
+        hint: "Verificar funcionamiento correcto de las luces del vehículo.",
       },
       {
         key: "luces_freno",
@@ -130,8 +110,8 @@ export const SECTIONS: Section[] = [
     items: [
       {
         key: "extintor",
-        label: "Extintor de incendio (carga y sello vigente)",
-        hint: "Capturar el manómetro en zona roja o el sello de seguridad roto/ausente.",
+        label: "Extintor existe",
+        hint: "Verificar presencia del extintor en el vehículo.",
       },
       {
         key: "cunas",
@@ -164,11 +144,6 @@ export const SECTIONS: Section[] = [
         key: "frenos",
         label: "Frenos",
         hint: "Fotografiar disco rayado, pastilla desgastada o pedal de freno sin resistencia.",
-      },
-      {
-        key: "fugas_fluidos",
-        label: "Fugas de fluidos (aceite, refrigerante, frenos)",
-        hint: "Fotografiar la mancha en el suelo y el origen de la fuga en el motor o transmisión.",
       },
       {
         key: "bateria",

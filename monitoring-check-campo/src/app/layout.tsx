@@ -1,15 +1,24 @@
 import type { Metadata, Viewport } from 'next';
 import { APP_VERSION } from '@/lib/version';
+import PwaRegister from '@/components/PwaRegister';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: `Check ECF 4 v${APP_VERSION} — Monitoring`,
   description: 'Inspección técnica de camionetas en terreno',
   applicationName: 'Check ECF 4',
+  manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Check ECF 4',
+  },
+  icons: {
+    icon: [
+      { url: '/icon-192.svg', type: 'image/svg+xml' },
+      { url: '/icon-512.svg', type: 'image/svg+xml' },
+    ],
+    apple: [{ url: '/apple-touch-icon.svg', type: 'image/svg+xml' }],
   },
   formatDetection: {
     telephone: false,
@@ -28,7 +37,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <PwaRegister />
+        {children}
+      </body>
     </html>
   );
 }

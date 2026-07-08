@@ -258,11 +258,27 @@ export default function ChecklistWizard() {
       <div className="form-grid-2">
         <div className="form-group">
           <label className="form-label">Fecha</label>
-          <input type="date" name="fecha" value={formData.fecha} onChange={handleInput} required />
+          <input
+            type="date"
+            name="fecha"
+            value={formData.fecha}
+            readOnly
+            aria-readonly="true"
+            className="input-readonly"
+            required
+          />
         </div>
         <div className="form-group">
           <label className="form-label">Hora</label>
-          <input type="time" name="hora" value={formData.hora} onChange={handleInput} required />
+          <input
+            type="time"
+            name="hora"
+            value={formData.hora}
+            readOnly
+            aria-readonly="true"
+            className="input-readonly"
+            required
+          />
         </div>
         <div className="form-group">
           <label className="form-label">
