@@ -97,8 +97,11 @@ export default function AccessGate() {
             <input
               id="rut"
               type="text"
-              inputMode="text"
+              inputMode="numeric"
+              enterKeyHint="next"
               autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="12.345.678-9"
               value={rut}
               onChange={(e) => setRut(formatRutInput(e.target.value))}
@@ -118,7 +121,10 @@ export default function AccessGate() {
               id="patente"
               type="text"
               inputMode="text"
+              enterKeyHint="go"
               autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
               autoComplete="off"
               placeholder="ABCD-12 o AB-1234"
               value={patente}
@@ -138,12 +144,6 @@ export default function AccessGate() {
           </button>
         </form>
       </main>
-
-      <style jsx>{`
-        .access-card { margin-top: -1.5rem; position: relative; z-index: 2; }
-        .access-intro { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
-        .btn-full { width: 100%; margin-top: 0.5rem; }
-      `}</style>
     </div>
   );
 }

@@ -29,30 +29,45 @@
 /* ─── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior-y: contain;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 h1,h2,h3 { color: var(--blue); font-weight: 700; }
-button    { font-family: inherit; cursor: pointer; border: none; background: none; }
-input, select, textarea { font-family: inherit; }
+button    { font-family: inherit; cursor: pointer; border: none; background: none; touch-action: manipulation; }
+input, select, textarea { font-family: inherit; font-size: 16px; /* evita zoom iOS */ }
 
 /* ─── App Shell ─────────────────────────────────────────── */
 .app-shell {
   max-width: 780px;
   margin: 0 auto;
-  padding: 0 1rem 4rem;
+  padding: 0 1rem 5.5rem;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
 }
+
+.access-card { margin-top: -1.5rem; position: relative; z-index: 2; }
+.access-intro { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+.btn-full { width: 100%; margin-top: 0.5rem; min-height: 48px; }
 
 /* ─── Header ────────────────────────────────────────────── */
 .app-header {
   background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
   margin: 0 -1rem 0;
-  padding: 2rem 2rem 3.5rem;
+  padding: 1.5rem 1.25rem 3rem;
+  padding-top: max(1.5rem, env(safe-area-inset-top));
   position: relative;
   overflow: hidden;
 }
@@ -72,8 +87,8 @@ input, select, textarea { font-family: inherit; }
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
 }
-.app-title    { color: #fff; font-size: 2rem; margin-bottom: .2rem; }
-.app-subtitle { color: rgba(255,255,255,.75); font-size: .9rem; font-weight: 500; }
+.app-title    { color: #fff; font-size: clamp(1.35rem, 5vw, 2rem); margin-bottom: .2rem; }
+.app-subtitle { color: rgba(255,255,255,.75); font-size: .85rem; font-weight: 500; word-break: break-word; }
 
 .header-alert-badge {
   display: flex; align-items: center; gap: .4rem;
@@ -189,13 +204,16 @@ input[type="time"],
 select,
 textarea {
   width: 100%;
-  padding: .7rem 1rem;
+  padding: .85rem 1rem;
   border: 1.5px solid var(--border);
   border-radius: var(--r-md);
-  font-size: .95rem;
+  font-size: 16px;
+  min-height: 48px;
   transition: border-color var(--t), box-shadow var(--t);
   background: var(--surface);
   color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
 }
 input:focus, select:focus, textarea:focus {
   border-color: var(--blue);
@@ -220,7 +238,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: .75rem;
   padding: .85rem 1rem;
   background: var(--surface);
   flex-wrap: wrap;
@@ -236,16 +254,19 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Binary buttons */
-.binary-btns { display: flex; gap: .5rem; flex-shrink: 0; }
+.binary-btns { display: flex; gap: .5rem; flex-shrink: 0; width: 100%; max-width: 280px; }
 .bin-btn {
-  display: flex; align-items: center; gap: .35rem;
-  padding: .45rem .9rem;
+  display: flex; align-items: center; justify-content: center; gap: .35rem;
+  flex: 1;
+  min-height: 44px;
+  padding: .55rem .9rem;
   border-radius: 99px;
-  font-size: .82rem; font-weight: 600;
+  font-size: .9rem; font-weight: 600;
   border: 1.5px solid var(--border);
   color: var(--text-muted);
   transition: all var(--t);
   background: var(--surface);
+  -webkit-tap-highlight-color: transparent;
 }
 .bin-btn--good:hover, .bin-btn--good.active {
   background: #DCFCE7; border-color: var(--success); color: #15803D;
@@ -394,15 +415,24 @@ input:focus, select:focus, textarea:focus {
 /* ─── Navigation Buttons ────────────────────────────────── */
 .step-nav {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
   border-top: 1px solid var(--border);
   gap: .75rem;
+  position: sticky;
+  bottom: 0;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(8px);
+  z-index: 5;
 }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
-  padding: .7rem 1.5rem; border-radius: var(--r-md);
-  font-size: .95rem; font-weight: 600;
+  padding: .85rem 1.25rem; border-radius: var(--r-md);
+  font-size: 1rem; font-weight: 600;
+  min-height: 48px;
+  flex: 1;
   transition: all var(--t-n);
+  -webkit-tap-highlight-color: transparent;
 }
 .btn-primary {
   background: var(--blue); color: #fff;
@@ -465,4 +495,26 @@ input:focus, select:focus, textarea:focus {
 }
 .full-width {
   grid-column: 1 / -1;
+}
+
+/* ─── Mobile refinements ────────────────────────────────── */
+@media (max-width: 640px) {
+  .app-shell { padding-bottom: 6rem; }
+  .app-header { padding: 1.25rem 1rem 2.75rem; padding-top: max(1.25rem, env(safe-area-inset-top)); }
+  .stepper { margin: -1.25rem -.25rem 1rem; border-radius: var(--r-md); padding: .5rem; }
+  .stepper-label { max-width: 4.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .step-card-header { padding: 1rem; flex-wrap: wrap; }
+  .step-body { padding: 1rem; gap: .85rem; }
+  .form-grid-2 { grid-template-columns: 1fr; gap: 1rem; }
+  .check-row-header { flex-direction: column; align-items: stretch; }
+  .binary-btns { max-width: none; }
+  .gen-photo-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .gen-photo-card { min-height: 140px; padding: 1rem .5rem; }
+  .step-nav { padding-left: 1rem; padding-right: 1rem; }
+  .header-alert-badge { font-size: .7rem; padding: .35rem .7rem; }
+}
+
+@media (max-width: 380px) {
+  .gen-photo-grid { grid-template-columns: 1fr; }
+  .btn { font-size: .9rem; padding: .75rem .85rem; }
 }

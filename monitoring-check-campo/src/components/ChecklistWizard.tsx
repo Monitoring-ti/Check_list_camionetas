@@ -269,7 +269,8 @@ export default function ChecklistWizard() {
             <span className="label-hint">Último: {lastKilometraje?.toLocaleString()}</span>
           </label>
           <input type="number" name="kilometraje" value={formData.kilometraje} onChange={handleInput}
-            placeholder="Ej. 125000" className={!isKmValid ? 'is-invalid' : ''} required />
+            inputMode="numeric" enterKeyHint="done" placeholder="Ej. 125000"
+            className={!isKmValid ? 'is-invalid' : ''} required />
           {!isKmValid && formData.kilometraje && (
             <span className="invalid-feedback">Debe ser mayor a {lastKilometraje?.toLocaleString()}.</span>
           )}
@@ -300,12 +301,16 @@ export default function ChecklistWizard() {
           font-size: 0.9rem;
         }
         .gestion-vial-toggle-card {
-          display: flex; align-items: center; justify-content: space-between;
+          display: flex; align-items: center; justify-content: space-between; gap: 1rem;
           padding: 1.25rem; background: #f0f7ff; border: 1px solid #c2e0ff; border-radius: 1rem;
         }
-        .toggle-info { display: flex; gap: 1rem; align-items: center; }
+        .toggle-info { display: flex; gap: 1rem; align-items: center; flex: 1; min-width: 0; }
         .toggle-info p { margin: 0; font-size: 0.85rem; color: #4b5563; }
-        .toggle-switch { position: relative; width: 50px; height: 26px; }
+        .toggle-switch { position: relative; width: 50px; height: 26px; flex-shrink: 0; }
+        @media (max-width: 480px) {
+          .gestion-vial-toggle-card { padding: 1rem; }
+          .toggle-info { gap: .75rem; }
+        }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-switch label {
           position: absolute; cursor: pointer; inset: 0;

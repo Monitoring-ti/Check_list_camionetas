@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 
 interface SignatureCanvasProps {
   onSignatureChange: (dataUrl: string | null) => void;
@@ -8,19 +8,55 @@ interface SignatureCanvasProps {
 
 export default function SignatureCanvas({ onSignatureChange }: SignatureCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const isDrawing = useRef(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
-  useEffect(() => {
+  const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const wrapper = wrapperRef.current;
+    if (!canvas || !wrapper) return;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = wrapper.clientWidth;
+    const height = 160;
+
+    const prev = canvas.toDataURL('image/png');
+    const hadInk = !isEmpty;
+
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.strokeStyle = '#1A418C';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-  }, []);
+
+    if (hadInk) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, width, height);
+      };
+      img.src = prev;
+    }
+  }, [isEmpty]);
+
+  useEffect(() => {
+    resizeCanvas();
+    const onResize = () => resizeCanvas();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, [resizeCanvas]);
 
   const getPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) => {
     const rect = canvas.getBoundingClientRect();
@@ -74,11 +110,9 @@ export default function SignatureCanvas({ onSignatureChange }: SignatureCanvasPr
   };
 
   return (
-    <div className="signature-wrapper">
+    <div className="signature-wrapper" ref={wrapperRef}>
       <canvas
         ref={canvasRef}
-        width={600}
-        height={180}
         className="signature-canvas"
         onMouseDown={startDraw}
         onMouseMove={draw}

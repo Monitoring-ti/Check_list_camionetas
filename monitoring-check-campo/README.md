@@ -25,7 +25,7 @@ App móvil para inspección ECF 4 de camionetas. Solo módulo de check en terren
 
 ## Variables de entorno
 
-Solo se necesitan en el frontend:
+Solo se necesitan en el frontend (también en Vercel → Settings → Environment Variables):
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=
@@ -33,3 +33,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 **No usar** `service_role` en esta app.
+
+## Deploy (Vercel)
+
+Root Directory del proyecto: `monitoring-check-campo`
+
+```bash
+# Desde esta carpeta, con Vercel CLI logueado:
+npx vercel --prod
+```
+
+O importar el repo en [vercel.com/new](https://vercel.com/new) y setear:
+- Framework: Next.js
+- Root Directory: `monitoring-check-campo`
+- Env vars: las dos `NEXT_PUBLIC_*` de arriba
