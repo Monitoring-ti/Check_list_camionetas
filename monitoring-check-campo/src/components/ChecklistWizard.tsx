@@ -459,9 +459,9 @@ export default function ChecklistWizard() {
           </div>
           <div className="app-header-badges">
             <AppVersion />
-          {hasBadBlocking && (
-            <div className="header-alert-badge"><AlertTriangle size={16} /> No Apto</div>
-          )}
+            {hasBadBlocking && (
+              <div className="header-alert-badge"><AlertTriangle size={16} /> No Apto</div>
+            )}
           </div>
         </div>
       </header>
