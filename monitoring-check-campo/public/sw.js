@@ -1,5 +1,5 @@
-const CACHE_NAME = 'check-ecf4-shell-v0.7';
-const APP_SHELL = ['/', '/check', '/check/inspeccion', '/manifest.webmanifest'];
+const CACHE_NAME = 'check-ecf4-shell-v0.7.1';
+const APP_SHELL = ['/', '/check', '/check/inspeccion', '/manifest.webmanifest', '/branding/logo-banner.svg', '/branding/logo-circular.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

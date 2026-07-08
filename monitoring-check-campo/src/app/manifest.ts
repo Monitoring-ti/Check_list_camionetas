@@ -14,19 +14,19 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['business', 'productivity', 'utilities'],
     icons: [
       {
-        src: '/icon-192.svg',
+        src: '/branding/logo-circular.svg',
         sizes: '192x192',
         type: 'image/svg+xml',
         purpose: 'any',
       },
       {
-        src: '/icon-512.svg',
+        src: '/branding/logo-circular.svg',
         sizes: '512x512',
         type: 'image/svg+xml',
         purpose: 'maskable',
       },
       {
-        src: '/apple-touch-icon.svg',
+        src: '/branding/logo-circular.svg',
         sizes: '180x180',
         type: 'image/svg+xml',
         purpose: 'any',

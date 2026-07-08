@@ -19,7 +19,7 @@ import {
 } from '@/lib/checkSession';
 import SignatureCanvas from '@/components/SignatureCanvas';
 import FaultPhoto from '@/components/FaultPhoto';
-import AppVersion from '@/components/AppVersion';
+import AppHeader from '@/components/AppHeader';
 
 interface ItemState {
   value: boolean | null;
@@ -467,20 +467,12 @@ export default function ChecklistWizard() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="app-header-inner">
-          <div>
-            <h1 className="app-title">Check ECF 4</h1>
-            <p className="app-subtitle">{session.vehiculo.patente} · {session.trabajador.nombre}</p>
-          </div>
-          <div className="app-header-badges">
-            <AppVersion />
-            {hasBadBlocking && (
-              <div className="header-alert-badge"><AlertTriangle size={16} /> No Apto</div>
-            )}
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        subtitle={`${session.vehiculo.patente} · ${session.trabajador.nombre}`}
+        badge={hasBadBlocking ? (
+          <div className="header-alert-badge"><AlertTriangle size={16} /> No Apto</div>
+        ) : undefined}
+      />
 
       <nav className="stepper" aria-label="pasos">
         {activeSteps.map((step, i) => (
