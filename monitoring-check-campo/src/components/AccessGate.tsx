@@ -14,6 +14,7 @@ import {
   saveCheckSession,
   type ValidateAccessResponse,
 } from '@/lib/checkSession';
+import AppVersion from '@/components/AppVersion';
 
 export default function AccessGate() {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function AccessGate() {
             <h1 className="app-title">Check ECF 4</h1>
             <p className="app-subtitle">Inspección de camioneta en terreno</p>
           </div>
+          <AppVersion />
         </div>
       </header>
 
