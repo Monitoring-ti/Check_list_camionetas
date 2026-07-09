@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Truck, User, AlertTriangle, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatRutInput, isValidRut, normalizeRut } from '@/lib/rut';
@@ -18,14 +18,28 @@ import AppHeader from '@/components/AppHeader';
 
 export default function AccessGate() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [rut, setRut] = useState('');
   const [patente, setPatente] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const rutInputRef = useRef<HTMLInputElement>(null);
+
   const rutOk = isValidRut(rut);
   const patenteOk = isValidPatenteChilena(patente);
   const canSubmit = rutOk && patenteOk && !loading;
+
+  useEffect(() => {
+    const p = searchParams?.get('patente');
+    if (p) {
+      setPatente(formatPatenteDisplay(p));
+      // Focus RUT input on mount if patente is prefilled
+      setTimeout(() => {
+        rutInputRef.current?.focus();
+      }, 150);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,6 +104,7 @@ export default function AccessGate() {
             <label className="form-label" htmlFor="rut">RUT del responsable</label>
             <input
               id="rut"
+              ref={rutInputRef}
               type="text"
               inputMode="numeric"
               enterKeyHint="next"
