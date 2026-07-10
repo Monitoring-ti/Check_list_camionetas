@@ -6,6 +6,16 @@ import './globals.css';
 export const metadata: Metadata = {
   title: `Check ECF 4 v${APP_VERSION} — Monitoring`,
   description: 'Inspección técnica de camionetas en terreno',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
   applicationName: 'Check ECF 4',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
