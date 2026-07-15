@@ -9,7 +9,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
-  SECTIONS, GENERAL_PHOTOS, STEPS, BLOCKING_ITEMS,
+  SECTIONS, GENERAL_PHOTOS, STEPS, BLOCKING_ITEMS, FUEL_LEVELS,
+  type FuelLevel,
 } from '@/lib/checklistData';
 import {
   getCheckSession,
@@ -61,6 +62,7 @@ export default function ChecklistWizard() {
     kilometraje: '',
     observaciones: '',
   });
+  const [nivelCombustible, setNivelCombustible] = useState<FuelLevel | ''>('');
   const [inspection, setInspection] = useState<InspectionMap>(buildInitialInspection);
   const [generalPhotos, setGeneralPhotos] = useState<Record<string, File | null>>(() => {
     const m: Record<string, File | null> = {};
@@ -95,7 +97,6 @@ export default function ChecklistWizard() {
     .some(i => inspection[i.key]?.value === false);
 
   const resultadoFinal = hasBadBlocking ? 'Vehículo No Apto para Operar' : 'Vehículo Apto';
-  const missingGenPhotos = GENERAL_PHOTOS.filter(p => !generalPhotos[p]);
 
   const stepComplete = useCallback((stepIdx: number): boolean => {
     const step = activeSteps[stepIdx];
@@ -103,7 +104,8 @@ export default function ChecklistWizard() {
     if (step.id === 'identificacion') {
       return !!(formData.kilometraje && isKmValid);
     }
-    if (step.id === 'fotos') return missingGenPhotos.length === 0;
+    // Fotos generales opcionales (0–4)
+    if (step.id === 'fotos') return true;
     if (step.id === 'cierre') return !!signature && aceptoEnvio;
     const sec = SECTIONS.find(s => s.id === step.id);
     if (!sec) return true;
@@ -113,7 +115,7 @@ export default function ChecklistWizard() {
       if (st.value === false) return !!(st.descripcion.trim() && st.fotoFile);
       return true;
     });
-  }, [formData, isKmValid, inspection, missingGenPhotos, signature, aceptoEnvio, activeSteps]);
+  }, [formData, isKmValid, inspection, signature, aceptoEnvio, activeSteps]);
 
   const allComplete = activeSteps.every((_, i) => stepComplete(i));
 
@@ -213,6 +215,7 @@ export default function ChecklistWizard() {
         foto_trasera: genUrls['Trasera'] ?? null,
         foto_lateral_der: genUrls['Lateral Derecho'] ?? null,
         foto_lateral_izq: genUrls['Lateral Izquierdo'] ?? null,
+        nivel_combustible: nivelCombustible || null,
         details: detailRows,
       };
 
@@ -291,6 +294,25 @@ export default function ChecklistWizard() {
           {!isKmValid && formData.kilometraje && (
             <span className="invalid-feedback">Debe ser mayor a {lastKilometraje?.toLocaleString()}.</span>
           )}
+        </div>
+      </div>
+
+      <div className="form-group full-width">
+        <label className="form-label">
+          Nivel de combustible
+          <span className="label-hint">Opcional</span>
+        </label>
+        <div className="fuel-level-btns" role="group" aria-label="Nivel de combustible">
+          {FUEL_LEVELS.map(level => (
+            <button
+              key={level}
+              type="button"
+              className={`fuel-level-btn ${nivelCombustible === level ? 'active' : ''}`}
+              onClick={() => setNivelCombustible(prev => (prev === level ? '' : level))}
+            >
+              {level}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -396,6 +418,7 @@ export default function ChecklistWizard() {
 
   const renderGeneralPhotos = () => (
     <div className="step-body">
+      <p className="gen-photo-hint">Puede omitir fotos. Orden sugerido: izquierda, trasera, derecha y frontal.</p>
       <div className="gen-photo-grid">
         {GENERAL_PHOTOS.map(label => {
           const file = generalPhotos[label];
@@ -410,7 +433,7 @@ export default function ChecklistWizard() {
                 <UploadCloud size={36} className="gen-photo-icon" />
               )}
               <span className="gen-photo-label">{label}</span>
-              {file ? <span className="gen-photo-ok">✓ Cargada</span> : <span className="gen-photo-req">Obligatorio</span>}
+              {file ? <span className="gen-photo-ok">✓ Cargada</span> : <span className="gen-photo-req">Opcional</span>}
             </label>
           );
         })}

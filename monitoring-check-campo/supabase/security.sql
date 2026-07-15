@@ -189,7 +189,8 @@ BEGIN
   INSERT INTO public.monitoring_inspections (
     fecha, hora, responsable_inspeccion, cargo, patente,
     kilometraje, marca_modelo, anio, observaciones, resultado,
-    firma_url, foto_frontal, foto_trasera, foto_lateral_der, foto_lateral_izq
+    firma_url, foto_frontal, foto_trasera, foto_lateral_der, foto_lateral_izq,
+    nivel_combustible
   ) VALUES (
     (p_payload->>'fecha')::date,
     (p_payload->>'hora')::time,
@@ -205,7 +206,8 @@ BEGIN
     nullif(p_payload->>'foto_frontal', ''),
     nullif(p_payload->>'foto_trasera', ''),
     nullif(p_payload->>'foto_lateral_der', ''),
-    nullif(p_payload->>'foto_lateral_izq', '')
+    nullif(p_payload->>'foto_lateral_izq', ''),
+    nullif(p_payload->>'nivel_combustible', '')
   )
   RETURNING id INTO v_insp_id;
 

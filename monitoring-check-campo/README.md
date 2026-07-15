@@ -1,49 +1,41 @@
-# Monitoring Check Campo
+# Monitoring Check Campo — Checklist ECF 4
 
-App móvil para inspección ECF 4 de camionetas. Solo módulo de check en terreno.
+**Único módulo de checklist** para vehículos/camionetas. Sin administración.
+
+## Qué hace
+
+- Ingreso con **RUT + patente**
+- Wizard de inspección ECF 4 / SIGO
+- Fotos, hallazgos, firma, resultado Apto / No Apto
+
+## Qué no hace
+
+- No gestiona flota ni documentos
+- No tiene panel admin (eso es `../control_vehiculos`)
 
 ## Setup
 
-1. Ejecutar `supabase/security.sql` en el SQL Editor de Supabase.
-2. Crear bucket `vehicle-photos` (público) si no existe.
-3. Copiar `.env.example` → `.env.local` y completar credenciales.
-4. `npm install && npm run dev`
+1. Ejecutar `supabase/security.sql` en Supabase.
+2. Bucket `vehicle-photos` (público lectura).
+3. `.env.local` con `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+4. `npm install && npm run dev` → http://localhost:3000
 
 ## Rutas
 
 | Ruta | Descripción |
 |------|-------------|
-| `/check` | Ingreso RUT + patente |
-| `/check/inspeccion` | Wizard de inspección |
+| `/check` | Acceso RUT + patente |
+| `/check/inspeccion` | Checklist |
 
-## Seguridad
+## Versión
 
-- El cliente **no** lee `trabajadores` ni `vehicles` directamente.
-- Validación y envío vía RPC (`check_validate_access`, `check_submit_inspection`).
-- Sesión de campo con token de 4 h, un solo envío por sesión.
-- RLS activo sin políticas abiertas para `anon`.
+`0.7.3` — ver `src/lib/version.ts`
 
-## Variables de entorno
+## Deploy
 
-Solo se necesitan en el frontend (también en Vercel → Settings → Environment Variables):
+Root Directory Vercel: `monitoring-check-campo`  
+Prod: https://monitoring-check-campo.vercel.app
 
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
+## Arquitectura
 
-**No usar** `service_role` en esta app.
-
-## Deploy (Vercel)
-
-Root Directory del proyecto: `monitoring-check-campo`
-
-```bash
-# Desde esta carpeta, con Vercel CLI logueado:
-npx vercel --prod
-```
-
-O importar el repo en [vercel.com/new](https://vercel.com/new) y setear:
-- Framework: Next.js
-- Root Directory: `monitoring-check-campo`
-- Env vars: las dos `NEXT_PUBLIC_*` de arriba
+Ver `../README.md` (checklist vs control de vehículos).
