@@ -2,7 +2,7 @@
 
 Checklist ECF 4 / SIGO para inspección de camionetas en terreno. Sin panel de administración.
 
-**Versión:** `0.7.4`
+**Versión:** `1.0.0`
 
 ## Qué hace
 
@@ -56,6 +56,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...  # o sb_publishable_...
 - [ ] Abrir `/` → bienvenida
 - [ ] `/check` → validar RUT + patente reales
 - [ ] Completar inspección y ver resultado en admin (`consulta_camionetas`)
+
+## Seguridad
+
+- **Google / buscadores:** `robots.txt` Disallow `/` + metadata `noindex` + header `X-Robots-Tag`.
+- **Base de datos:** el cliente **no** debe leer tablas. Solo RPCs `check_validate_access` y `check_submit_inspection`.
+- Ejecutar en Supabase (en orden):
+  1. `supabase/security.sql`
+  2. `supabase/harden_anon.sql`
+  3. `supabase/close_storage_list.sql` ← bloquea listado de fotos por API
+- **Nunca** poner `service_role` en el frontend ni en Vercel públicas.
+- Storage `vehicle-photos`: upload solo en `hallazgos/`, `general/`, `firmas/`. Sin listado anon; URLs solo por ruta conocida.
 
 ## Arquitectura
 
