@@ -18,9 +18,6 @@ dist/
 .env
 .env.*
 !.env.example
-**/.env
-**/.env.local
-**/.env*.local
 *.pem
 
 # Debug / OS
@@ -38,8 +35,5 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-# Root clutter (legacy empty package)
-/package-lock.json
-/package.json
-
-.vercel
+# Stitch design references (local only)
+stitch-ref/
