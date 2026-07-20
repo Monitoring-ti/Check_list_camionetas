@@ -21,12 +21,16 @@ import {
 import SignatureCanvas from '@/components/SignatureCanvas';
 import FaultPhoto from '@/components/FaultPhoto';
 import AppHeader from '@/components/AppHeader';
+import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
 
 interface ItemState {
   value: boolean | null;
   descripcion: string;
   fotoFile: File | null;
   fotoGeo: string;
+  fotoUrl: string | null;
+  fotoUploading: boolean;
+  fotoUploadError: string | null;
 }
 
 type InspectionMap = Record<string, ItemState>;
@@ -35,7 +39,15 @@ function buildInitialInspection(): InspectionMap {
   const map: InspectionMap = {};
   SECTIONS.forEach(section =>
     section.items.forEach(item => {
-      map[item.key] = { value: null, descripcion: '', fotoFile: null, fotoGeo: '' };
+      map[item.key] = {
+        value: null,
+        descripcion: '',
+        fotoFile: null,
+        fotoGeo: '',
+        fotoUrl: null,
+        fotoUploading: false,
+        fotoUploadError: null,
+      };
     })
   );
   return map;
@@ -112,7 +124,9 @@ export default function ChecklistWizard() {
     return sec.items.every(i => {
       const st = inspection[i.key];
       if (st.value === null) return false;
-      if (st.value === false) return !!(st.descripcion.trim() && st.fotoFile);
+      if (st.value === false) {
+        return !!(st.descripcion.trim() && st.fotoUrl && !st.fotoUploading && !st.fotoUploadError);
+      }
       return true;
     });
   }, [formData, isKmValid, inspection, signature, aceptoEnvio, activeSteps]);
@@ -125,27 +139,87 @@ export default function ChecklistWizard() {
   };
 
   const setItemValue = (key: string, value: boolean) => {
-    setInspection(p => ({ ...p, [key]: { ...p[key], value } }));
+    setInspection(p => ({
+      ...p,
+      [key]: value
+        ? {
+            ...p[key],
+            value,
+            descripcion: '',
+            fotoFile: null,
+            fotoGeo: '',
+            fotoUrl: null,
+            fotoUploading: false,
+            fotoUploadError: null,
+          }
+        : { ...p[key], value },
+    }));
   };
 
   const setItemDesc = (key: string, descripcion: string) => {
     setInspection(p => ({ ...p, [key]: { ...p[key], descripcion } }));
   };
 
-  const setItemPhoto = (key: string, fotoFile: File | null, fotoGeo: string) => {
-    setInspection(p => ({ ...p, [key]: { ...p[key], fotoFile, fotoGeo } }));
+  const setItemPhoto = async (key: string, fotoFile: File | null, fotoGeo: string) => {
+    if (!fotoFile) {
+      setInspection(p => ({
+        ...p,
+        [key]: {
+          ...p[key],
+          fotoFile: null,
+          fotoGeo: '',
+          fotoUrl: null,
+          fotoUploading: false,
+          fotoUploadError: null,
+        },
+      }));
+      return;
+    }
+
+    const patente = session?.vehiculo.patente ?? 'SINPAT';
+    setInspection(p => ({
+      ...p,
+      [key]: {
+        ...p[key],
+        fotoFile,
+        fotoGeo,
+        fotoUrl: null,
+        fotoUploading: true,
+        fotoUploadError: null,
+      },
+    }));
+
+    try {
+      const url = await uploadVehiclePhoto(
+        'hallazgos',
+        `${patente}-${Date.now()}-${key}`,
+        fotoFile
+      );
+      setInspection(p => ({
+        ...p,
+        [key]: {
+          ...p[key],
+          fotoUrl: url,
+          fotoUploading: false,
+          fotoUploadError: null,
+        },
+      }));
+    } catch (err) {
+      setInspection(p => ({
+        ...p,
+        [key]: {
+          ...p[key],
+          fotoUrl: null,
+          fotoUploading: false,
+          fotoUploadError: err instanceof Error ? err.message : 'No se pudo guardar la foto',
+        },
+      }));
+    }
   };
 
   const handleGenPhoto = (label: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setGeneralPhotos(p => ({ ...p, [label]: file }));
-  };
-
-  const uploadFile = async (path: string, file: File): Promise<string> => {
-    const { error } = await supabase.storage.from('vehicle-photos').upload(path, file, { upsert: true });
-    if (error) throw new Error(`Error al subir foto: ${error.message}`);
-    const { data } = supabase.storage.from('vehicle-photos').getPublicUrl(path);
-    return data.publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,8 +235,9 @@ export default function ChecklistWizard() {
       const genUrls: Record<string, string> = {};
       for (const [label, file] of Object.entries(generalPhotos)) {
         if (file) {
-          genUrls[label] = await uploadFile(
-            `general/${patente}-${ts}-${label.replace(/ /g, '')}.jpg`,
+          genUrls[label] = await uploadVehiclePhoto(
+            'general',
+            `${patente}-${ts}-${label.replace(/ /g, '')}`,
             file
           );
         }
@@ -172,19 +247,15 @@ export default function ChecklistWizard() {
       if (signature) {
         const blob = await (await fetch(signature)).blob();
         const sigFile = new File([blob], 'firma.png', { type: 'image/png' });
-        firmaUrl = await uploadFile(`firmas/${patente}-${ts}-firma.png`, sigFile);
+        firmaUrl = await uploadVehiclePhoto('firmas', `${patente}-${ts}-firma`, sigFile);
       }
 
       const detailRows = [];
       for (const section of activeSections) {
         for (const item of section.items) {
           const st = inspection[item.key];
-          let fotoUrl: string | null = null;
-          if (st.fotoFile) {
-            fotoUrl = await uploadFile(
-              `hallazgos/${patente}-${ts}-${item.key}.jpg`,
-              st.fotoFile
-            );
+          if (st.value === false && !st.fotoUrl) {
+            throw new Error(`Falta guardar la foto del hallazgo: ${item.label}`);
           }
           detailRows.push({
             seccion: section.title,
@@ -192,8 +263,8 @@ export default function ChecklistWizard() {
             item_label: item.label,
             is_good: st.value,
             descripcion: st.descripcion || null,
-            foto_url: fotoUrl,
-            geotag: st.fotoGeo || null,
+            foto_url: st.value === false ? st.fotoUrl : null,
+            geotag: st.value === false ? (st.fotoGeo || null) : null,
             is_blocking: BLOCKING_ITEMS.has(item.label),
           });
         }
@@ -377,7 +448,7 @@ export default function ChecklistWizard() {
           const isBad = st.value === false;
           const isGood = st.value === true;
           const isBlock = BLOCKING_ITEMS.has(item.label);
-          const needsEvidence = isBad && (!st.descripcion.trim() || !st.fotoFile);
+          const needsEvidence = isBad && (!st.descripcion.trim() || !st.fotoUrl || st.fotoUploading || !!st.fotoUploadError);
           return (
             <div key={item.key}
               className={`check-row ${isBad ? 'check-row--bad' : ''} ${isBlock && isBad ? 'check-row--blocking' : ''}`}>
@@ -402,11 +473,17 @@ export default function ChecklistWizard() {
                   <textarea className={`fault-desc ${!st.descripcion.trim() ? 'is-invalid' : ''}`}
                     rows={2} placeholder="Describa el hallazgo (obligatorio)…"
                     value={st.descripcion} onChange={e => setItemDesc(item.key, e.target.value)} />
-                  <FaultPhoto itemKey={item.key} hint={item.hint}
-                    onPhotoChange={(file, geo) => setItemPhoto(item.key, file, geo)} />
+                  <FaultPhoto
+                    itemKey={item.key}
+                    hint={item.hint}
+                    savedUrl={st.fotoUrl}
+                    uploading={st.fotoUploading}
+                    uploadError={st.fotoUploadError}
+                    onPhotoChange={(file, geo) => { void setItemPhoto(item.key, file, geo); }}
+                  />
                   {needsEvidence && (
                     <p className="fault-warning">
-                      <AlertTriangle size={14} /> Descripción y foto del hallazgo son obligatorias.
+                      <AlertTriangle size={14} /> Descripción y foto del hallazgo son obligatorias (la foto debe guardarse).
                     </p>
                   )}
                 </div>

@@ -506,7 +506,16 @@ input:focus, select:focus, textarea:focus {
   font-size: .88rem; font-weight: 600; color: var(--danger);
 }
 .fault-upload-btn:hover { background: var(--danger-bg); }
-.fault-required { font-size: .72rem; font-weight: 700; margin-left: auto; }
+.fault-upload-status {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .8rem; font-weight: 600; margin-top: .35rem;
+}
+.fault-upload-status--pending { color: var(--blue); }
+.fault-upload-status--ok { color: var(--success-text); }
+.fault-upload-status--err { color: var(--danger); }
+.fault-upload-btn.is-busy { opacity: .7; pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin .8s linear infinite; }
 .fault-preview-wrap { position: relative; }
 .fault-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--r-md); border: 2px solid var(--success); }
 .fault-geo { display: flex; align-items: center; gap: .3rem; font-size: .72rem; color: var(--text-muted); margin-top: .3rem; }
