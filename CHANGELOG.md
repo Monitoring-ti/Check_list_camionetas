@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 — 2026-07-20
+
+- RUT con dígito verificador automático al escribir el número
+- Manual de usuario (`docs/MANUAL_USUARIO.md`)
+
 ## 1.0.1 — 2026-07-20
 
 - Las fotos de hallazgo (ítem en **No**) se suben y guardan de inmediato en Storage
