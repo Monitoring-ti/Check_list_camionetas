@@ -591,6 +591,41 @@ input:focus, select:focus, textarea:focus {
 .acepto-checkbox { width: auto !important; transform: scale(1.35); cursor: pointer; flex-shrink: 0; }
 .acepto-label { font-size: .95rem; font-weight: 500; color: var(--text); cursor: pointer; }
 
+/* ─── Alertas No apta ───────────────────────────────────── */
+.alert-channels {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: 1rem 1.15rem;
+  background: #fff8f0;
+  border: 1px solid #fdba74;
+  border-left: 4px solid var(--orange);
+  border-radius: var(--r-lg);
+}
+.alert-channel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.alert-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  min-height: 40px;
+  padding: .4rem .75rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.alert-pill.is-on {
+  border-color: var(--orange);
+  color: var(--orange-dark);
+  background: #fff;
+}
+
 /* ─── Buttons / Nav ─────────────────────────────────────── */
 .step-nav {
   display: flex; justify-content: space-between; align-items: center;

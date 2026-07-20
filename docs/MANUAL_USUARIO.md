@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Monitoring Check Campo (Check ECF 4)  
-**Versión:** 1.0.3  
+**Versión:** 1.0.4  
 **Uso:** Inspección preoperacional de camionetas en terreno
 
 ---
@@ -86,15 +86,15 @@ Si marca **No**:
 2. Tome una **foto** (obligatorio). Espere el mensaje **Foto guardada**.
 3. Si el ítem es **bloqueante**, el resultado final será **No apta**.
 
-Ítems bloqueantes (ejemplos): frenos, luces de freno, cinturones, dirección, profundidad de dibujo.
+Ítems bloqueantes (ejemplos): frenos, estado neumáticos, luces de freno, cinturones, dirección.
 
 Secciones habituales:
 
 1. Seguridad Activa  
-2. Neumáticos  
+2. Neumáticos (incluye **Estado neumáticos**, traba tuercas y rueda de repuesto)  
 3. Señalización (visibilidad)  
 4. Emergencia  
-5. Mecánica  
+5. Mecánica (frenos y tablero)  
 6. Gestión Vial *(solo si la activó al inicio)*
 
 ### 5.3 Fotos generales
@@ -109,10 +109,11 @@ Secciones habituales:
 ### 5.4 Cierre y firma
 
 1. Revise el resultado: **Apta** o **No apta**.
-2. Observaciones (opcional).
-3. **Firma digital** en el recuadro (obligatorio). Use **Limpiar** si necesita rehacerla.
-4. Marque la casilla de declaración de veracidad.
-5. Pulse **Enviar inspección**.
+2. Si es **No apta**, al enviar se abre **automáticamente** correo y/o WhatsApp hacia supervisión (según configuración del sistema).
+3. Observaciones (opcional).
+4. **Firma digital** en el recuadro (obligatorio). Use **Limpiar** si necesita rehacerla.
+5. Marque la casilla de declaración de veracidad.
+6. Pulse **Enviar inspección**.
 
 Al confirmar verá un mensaje de éxito. Luego volverá a la pantalla de identificación para una nueva inspección.
 

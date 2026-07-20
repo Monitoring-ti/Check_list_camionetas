@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Shield, CircleDot, Eye, AlertOctagon, Wrench, Truck,
   CheckCircle, AlertTriangle, Send, UploadCloud,
-  FileText, ChevronRight, ChevronLeft, Check, XCircle
+  FileText, ChevronRight, ChevronLeft, Check, XCircle, Mail, MessageCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -22,6 +22,13 @@ import SignatureCanvas from '@/components/SignatureCanvas';
 import FaultPhoto from '@/components/FaultPhoto';
 import AppHeader from '@/components/AppHeader';
 import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
+import {
+  buildNoAptoAlertText,
+  getAlertEmail,
+  getAlertWhatsApp,
+  openEmailAlert,
+  openWhatsAppAlert,
+} from '@/lib/alerts';
 
 interface ItemState {
   value: boolean | null;
@@ -300,12 +307,56 @@ export default function ChecklistWizard() {
       const res = data as SubmitInspectionResponse;
       if (!res.ok) throw new Error(res.error ?? 'Error al guardar inspección');
 
-      clearCheckSession();
-      setStatusMessage({ type: 'success', text: `Inspección enviada. Resultado: ${res.resultado}` });
-      setCurrentStep(0);
-      window.scrollTo(0, 0);
+      if (hasBadBlocking) {
+        const hallazgos = activeSections.flatMap(sec =>
+          sec.items
+            .filter(i => inspection[i.key]?.value === false)
+            .map(i => {
+              const st = inspection[i.key];
+              const desc = st.descripcion.trim();
+              return desc ? `${i.label}: ${desc}` : i.label;
+            })
+        );
+        const text = buildNoAptoAlertText({
+          patente: session.vehiculo.patente,
+          responsable: session.trabajador.nombre,
+          resultado: resultadoFinal,
+          kilometraje: currentKm,
+          fecha: formData.fecha,
+          hora: formData.hora,
+          hallazgos,
+        });
+        const subject = `No apta — ${session.vehiculo.patente} — Check ECF 4`;
+        const emailTo = getAlertEmail();
+        const waTo = getAlertWhatsApp();
+        const opened: string[] = [];
 
-      setTimeout(() => router.replace('/check'), 4000);
+        if (emailTo) {
+          openEmailAlert(emailTo, subject, text);
+          opened.push('correo');
+        }
+        if (waTo) {
+          setTimeout(() => openWhatsAppAlert(waTo, text), emailTo ? 450 : 0);
+          opened.push('WhatsApp');
+        }
+
+        clearCheckSession();
+        setStatusMessage({
+          type: 'success',
+          text: opened.length
+            ? `Inspección enviada (No apta). Alerta automática: ${opened.join(' y ')}.`
+            : 'Inspección enviada (No apta). Falta configurar destinos de alerta en el servidor.',
+        });
+        setCurrentStep(0);
+        window.scrollTo(0, 0);
+        setTimeout(() => router.replace('/check'), 5000);
+      } else {
+        clearCheckSession();
+        setStatusMessage({ type: 'success', text: `Inspección enviada. Resultado: ${res.resultado}` });
+        setCurrentStep(0);
+        window.scrollTo(0, 0);
+        setTimeout(() => router.replace('/check'), 4000);
+      }
     } catch (err) {
       console.error(err);
       setStatusMessage({
@@ -520,7 +571,11 @@ export default function ChecklistWizard() {
     </div>
   );
 
-  const renderClosure = () => (
+  const renderClosure = () => {
+    const hasAlertDest =
+      !!getAlertEmail() || !!getAlertWhatsApp();
+
+    return (
     <div className="step-body">
       {hasBadBlocking ? (
         <div className="resultado-noapto">
@@ -536,6 +591,31 @@ export default function ChecklistWizard() {
           <strong>Apta</strong>
         </div>
       )}
+
+      {hasBadBlocking && (
+        <div className="alert-channels">
+          <p className="form-label" style={{ marginBottom: '.35rem' }}>
+            Alerta automática a supervisión
+          </p>
+          <p className="id-hint" style={{ marginBottom: '.5rem' }}>
+            Al enviar esta inspección se abrirá automáticamente correo y/o WhatsApp con el resumen No apta.
+          </p>
+          <div className="alert-channel-row">
+            <span className={`alert-pill ${getAlertEmail() ? 'is-on' : ''}`}>
+              <Mail size={16} /> Correo {getAlertEmail() ? 'listo' : 'no configurado'}
+            </span>
+            <span className={`alert-pill ${getAlertWhatsApp() ? 'is-on' : ''}`}>
+              <MessageCircle size={16} /> WhatsApp {getAlertWhatsApp() ? 'listo' : 'no configurado'}
+            </span>
+          </div>
+          {!hasAlertDest && (
+            <p className="fault-warning" style={{ marginTop: '.5rem' }}>
+              <AlertTriangle size={14} /> Aún no hay destinos configurados en el servidor.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="form-group" style={{ marginTop: '1.5rem' }}>
         <label className="form-label">Observaciones (opcional)</label>
         <textarea name="observaciones" value={formData.observaciones} onChange={handleInput}
@@ -554,7 +634,8 @@ export default function ChecklistWizard() {
         </label>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderStepContent = () => {
     const stepId = activeSteps[currentStep].id;
