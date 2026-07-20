@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 — 2026-07-20
+
+- RUT manual otra vez (sin DV automático)
+- Validación de formato con soporte correcto para DV **K**
+
 ## 1.0.2 — 2026-07-20
 
 - RUT con dígito verificador automático al escribir el número

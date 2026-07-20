@@ -2,7 +2,7 @@
 
 Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de administración.**
 
-**Versión:** `1.0.2` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
+**Versión:** `1.0.3` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
 
 ## Qué hace
 

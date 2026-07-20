@@ -114,23 +114,21 @@ export default function AccessGate() {
                 id="rut"
                 ref={rutInputRef}
                 type="text"
-                inputMode="numeric"
+                inputMode="text"
                 enterKeyHint="next"
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                placeholder="12.345.678"
+                placeholder="12.345.678-9 o …-K"
                 value={rut}
                 onChange={(e) => setRut(formatRutInput(e.target.value))}
                 className={rut && !rutOk ? 'is-invalid' : ''}
                 required
               />
               {rut && !rutOk ? (
-                <span className="invalid-feedback">Complete el RUT (7 u 8 dígitos)</span>
+                <span className="invalid-feedback">RUT inválido (revise el dígito verificador, puede ser K)</span>
               ) : (
-                <span className="id-hint">
-                  Ingrese el número; el dígito verificador se completa automáticamente.
-                </span>
+                <span className="id-hint">Debe estar registrado como trabajador activo. El DV puede ser 0–9 o K.</span>
               )}
             </div>
           </div>

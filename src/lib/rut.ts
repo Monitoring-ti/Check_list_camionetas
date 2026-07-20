@@ -1,4 +1,4 @@
-/** Normaliza RUT chileno: quita puntos/guión, DV en mayúscula */
+/** Normaliza RUT chileno: quita puntos/guión, DV en mayúscula (incluye K) */
 export function normalizeRut(rut: string): string {
   return rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
 }
@@ -21,50 +21,46 @@ export function computeRutDv(body: string): string {
   return String(expected);
 }
 
-function formatBody(body: string): string {
-  return body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
-
-/** Valida dígito verificador módulo 11 */
+/** Valida formato y dígito verificador (módulo 11). Acepta DV 0–9 o K. */
 export function isValidRut(rut: string): boolean {
   const clean = normalizeRut(rut);
   if (clean.length < 2) return false;
 
   const body = clean.slice(0, -1);
   const dv = clean.slice(-1);
-  if (!/^\d+$/.test(body) || body.length < 7 || body.length > 8) return false;
+
+  // Cuerpo solo dígitos; DV dígito o K
+  if (!/^\d+$/.test(body)) return false;
+  if (body.length < 7 || body.length > 8) return false;
+  if (!/^[\dK]$/.test(dv)) return false;
 
   return dv === computeRutDv(body);
 }
 
 /**
- * Formato visual con DV automático.
- * - Escribe solo el número (cuerpo): al llegar a 7–8 dígitos se completa el DV.
- * - Si pega un RUT completo válido, se respeta.
+ * Formato visual 12.345.678-9 / 12.345.678-K mientras escribe.
+ * El usuario ingresa cuerpo + DV (incluida K); no se calcula solo.
  */
 export function formatRutInput(value: string): string {
-  const raw = value.replace(/[^0-9kK]/g, '').toUpperCase();
-  if (!raw) return '';
+  // Permitir dígitos y K/k; el resto se ignora
+  let clean = value.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (!clean) return '';
 
-  // Pegado / edición de RUT completo válido (cuerpo + DV)
-  if (raw.length >= 8) {
-    const bodyGuess = raw.slice(0, -1).replace(/\D/g, '');
-    const dvGuess = raw.slice(-1);
-    if (
-      bodyGuess.length >= 7 &&
-      bodyGuess.length <= 8 &&
-      /^[\dK]$/.test(dvGuess) &&
-      computeRutDv(bodyGuess) === dvGuess
-    ) {
-      return `${formatBody(bodyGuess)}-${dvGuess}`;
-    }
+  // Evitar K en el cuerpo: solo el último carácter puede ser K
+  const kIndex = clean.indexOf('K');
+  if (kIndex !== -1 && kIndex !== clean.length - 1) {
+    clean = clean.replace(/K/g, '');
   }
 
-  // Solo cuerpo numérico (máx. 8). DV se calcula solo.
-  const body = raw.replace(/\D/g, '').slice(0, 8);
-  if (body.length === 0) return '';
-  if (body.length < 7) return formatBody(body);
+  // Máx. 8 dígitos de cuerpo + 1 DV
+  if (clean.length > 9) clean = clean.slice(0, 9);
 
-  const dv = computeRutDv(body);
-  return `${formatBody(body)}-${dv}`;
+  if (clean.length <= 1) return clean;
+
+  const body = clean.slice(0, -1).replace(/\D/g, '');
+  const dv = clean.slice(-1);
+  if (!body) return /^[\dK]$/.test(dv) ? dv : '';
+
+  const formatted = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${formatted}-${dv}`;
 }

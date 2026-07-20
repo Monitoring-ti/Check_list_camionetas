@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Monitoring Check Campo (Check ECF 4)  
-**Versión:** 1.0.2  
+**Versión:** 1.0.3  
 **Uso:** Inspección preoperacional de camionetas en terreno
 
 ---
@@ -38,8 +38,8 @@ No incluye administración de flota ni historial: eso se consulta en el sistema 
 
 ## 4. Identificación (RUT + patente)
 
-1. Ingrese su **RUT** (solo el número; el dígito verificador se completa solo).  
-   Ejemplo al escribir `12345678` → `12.345.678-5`.
+1. Ingrese su **RUT** completo, incluido el dígito verificador (puede ser **K**).  
+   Ejemplo: `12.345.678-5` o `12.345.678-K`.
 2. Ingrese la **patente** del vehículo:
    - Formato antiguo: `AB-1234`
    - Formato nuevo: `ABCD-12`
