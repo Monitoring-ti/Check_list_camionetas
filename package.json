@@ -1,12 +1,13 @@
 {
   "name": "monitoring-check-campo",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:resend": "node scripts/test-resend.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",

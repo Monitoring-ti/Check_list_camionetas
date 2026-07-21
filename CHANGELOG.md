@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.8 — 2026-07-21
+
+- En fotos exterior: ítem **Cintas reflectantes** (Sí/No) con evidencia si es No
+
+## 1.0.7 — 2026-07-21
+
+- Nuevo orden de pantallas: login → identificación (fecha/hora fijas) → fotos exterior → checklist → km/combustible/tablero → firma
+- Fotos exterior: derecha → trasera → izquierda → frontal
+- Kilometraje, combustible y testigos de tablero justo antes de aceptar y firmar
+
+## 1.0.6 — 2026-07-21
+
+- Orden del wizard: **Fotos exterior** (opcionales) justo después de Identificación
+- Compresión automática de fotos (máx. ~1600 px, JPEG) antes de subir — hallazgos y exterior
+
+## 1.0.5 — 2026-07-21
+
+- Alertas **No apta** en servidor (sin abrir correo ni WhatsApp)
+- API `POST /api/alert-no-apto` con correo vía **Resend** y/o **webhook**
+- Variables server-only: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL`, `ALERT_WEBHOOK_URL`
+
 ## 1.0.4 — 2026-07-20
 
 - Checklist: **Estado neumáticos** (reemplaza dibujo + aire); sin ítem batería

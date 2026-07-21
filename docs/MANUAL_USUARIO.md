@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Monitoring Check Campo (Check ECF 4)  
-**Versión:** 1.0.4  
+**Versión:** 1.0.8  
 **Uso:** Inspección preoperacional de camionetas en terreno
 
 ---
@@ -62,18 +62,29 @@ Si entra con un código QR de la camioneta, la patente puede venir precargada: c
 
 Use **Anterior** / **Siguiente** o el listado superior de pasos. No podrá avanzar un paso hasta completar lo obligatorio.
 
-### 5.1 Identificación (datos de la unidad)
+### 5.1 Identificación (usuario y vehículo)
 
-Se muestran responsable y vehículo (solo lectura). Complete:
+Se muestran responsable, cargo, RUT y vehículo (solo lectura).
 
-| Campo | Obligatorio | Notas |
-|-------|-------------|--------|
-| Fecha / Hora | — | Automáticas |
-| Kilometraje | Sí | Debe ser **mayor** al último registrado |
-| Nivel de combustible | No | 1/8, 1/4, 1/2, 3/4, FULL |
-| Inspección Gestión Vial | No | Active el interruptor solo si aplica faena / requisitos adicionales |
+| Campo | Editable | Notas |
+|-------|----------|--------|
+| Fecha / Hora | No | Automáticas; no se pueden cambiar |
+| Inspección Gestión Vial | Sí | Active el interruptor solo si aplica faena / requisitos adicionales |
 
-### 5.2 Secciones del checklist
+### 5.2 Fotos exterior
+
+**Opcionales.** Orden en pantalla:
+
+1. Lateral derecho  
+2. Trasera  
+3. Lateral izquierdo  
+4. Frontal  
+
+Las fotos se **optimizan solas** (menor resolución) para subir más rápido en terreno.
+
+En la misma pantalla debe responder **Cintas reflectantes** (Sí / No). Si marca **No**, descripción y foto son obligatorias.
+
+### 5.3 Secciones del checklist
 
 En cada ítem elija:
 
@@ -91,25 +102,26 @@ Si marca **No**:
 Secciones habituales:
 
 1. Seguridad Activa  
-2. Neumáticos (incluye **Estado neumáticos**, traba tuercas y rueda de repuesto)  
+2. Neumáticos  
 3. Señalización (visibilidad)  
 4. Emergencia  
-5. Mecánica (frenos y tablero)  
+5. Mecánica (frenos)  
 6. Gestión Vial *(solo si la activó al inicio)*
 
-### 5.3 Fotos generales
+### 5.4 Kilometraje, combustible y tablero
 
-**Opcionales.** Puede omitirlas o cargar:
+Justo **antes** de firmar:
 
-- Lateral izquierdo  
-- Trasera  
-- Lateral derecho  
-- Frontal  
+| Campo | Obligatorio | Notas |
+|-------|-------------|--------|
+| Kilometraje | Sí | Debe ser **mayor** al último registrado |
+| Nivel de combustible | No | 1/8, 1/4, 1/2, 3/4, FULL |
+| Testigos de tablero | Sí | Sí / No; si No, descripción + foto |
 
-### 5.4 Cierre y firma
+### 5.5 Cierre y firma
 
 1. Revise el resultado: **Apta** o **No apta**.
-2. Si es **No apta**, al enviar se abre **automáticamente** correo y/o WhatsApp hacia supervisión (según configuración del sistema).
+2. Si es **No apta**, al enviar el sistema **notifica automáticamente** a supervisión por correo o webhook (según configuración del servidor). No se abre el cliente de correo en el teléfono.
 3. Observaciones (opcional).
 4. **Firma digital** en el recuadro (obligatorio). Use **Limpiar** si necesita rehacerla.
 5. Marque la casilla de declaración de veracidad.

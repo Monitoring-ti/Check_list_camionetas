@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Shield, CircleDot, Eye, AlertOctagon, Wrench, Truck,
+  Shield, CircleDot, Eye, AlertOctagon, Wrench, Truck, Gauge,
   CheckCircle, AlertTriangle, Send, UploadCloud,
-  FileText, ChevronRight, ChevronLeft, Check, XCircle, Mail, MessageCircle
+  FileText, ChevronRight, ChevronLeft, Check, XCircle, Mail, Webhook
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -22,12 +22,11 @@ import SignatureCanvas from '@/components/SignatureCanvas';
 import FaultPhoto from '@/components/FaultPhoto';
 import AppHeader from '@/components/AppHeader';
 import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
+import { compressImage } from '@/lib/compressImage';
 import {
-  buildNoAptoAlertText,
-  getAlertEmail,
-  getAlertWhatsApp,
-  openEmailAlert,
-  openWhatsAppAlert,
+  fetchAlertChannelStatus,
+  sendNoAptoAlert,
+  type AlertChannelStatus,
 } from '@/lib/alerts';
 
 interface ItemState {
@@ -68,6 +67,10 @@ const sectionIcon = (id: string) => {
     emergencia:       <AlertOctagon size={22} />,
     mecanica:         <Wrench size={22} />,
     gestion_vial:     <Truck size={22} />,
+    operacion:        <Gauge size={22} />,
+    fotos:            <UploadCloud size={22} />,
+    identificacion:   <FileText size={22} />,
+    cierre:           <CheckCircle size={22} />,
   };
   return map[id] ?? <CheckCircle size={22} />;
 };
@@ -94,6 +97,7 @@ export default function ChecklistWizard() {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [alertChannels, setAlertChannels] = useState<AlertChannelStatus | null>(null);
 
   useEffect(() => {
     const s = getCheckSession();
@@ -103,6 +107,10 @@ export default function ChecklistWizard() {
     }
     setSession(s);
   }, [router]);
+
+  useEffect(() => {
+    fetchAlertChannelStatus().then(setAlertChannels);
+  }, []);
 
   const activeSteps = STEPS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
   const activeSections = SECTIONS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
@@ -117,25 +125,32 @@ export default function ChecklistWizard() {
 
   const resultadoFinal = hasBadBlocking ? 'Vehículo No Apto para Operar' : 'Vehículo Apto';
 
+  const isItemComplete = (key: string): boolean => {
+    const st = inspection[key];
+    if (!st || st.value === null) return false;
+    if (st.value === false) {
+      return !!(st.descripcion.trim() && st.fotoUrl && !st.fotoUploading && !st.fotoUploadError);
+    }
+    return true;
+  };
+
   const stepComplete = useCallback((stepIdx: number): boolean => {
     const step = activeSteps[stepIdx];
     if (!step) return true;
-    if (step.id === 'identificacion') {
-      return !!(formData.kilometraje && isKmValid);
+    // Solo lectura: usuario, vehículo, fecha y hora
+    if (step.id === 'identificacion') return true;
+    // Fotos exterior opcionales; cintas reflectantes (Sí/No) obligatorio
+    if (step.id === 'fotos') {
+      return isItemComplete('cintas_reflectantes');
     }
-    // Fotos generales opcionales (0–4)
-    if (step.id === 'fotos') return true;
+    if (step.id === 'operacion') {
+      if (!(formData.kilometraje && isKmValid)) return false;
+      return isItemComplete('tablero_indicadores');
+    }
     if (step.id === 'cierre') return !!signature && aceptoEnvio;
     const sec = SECTIONS.find(s => s.id === step.id);
     if (!sec) return true;
-    return sec.items.every(i => {
-      const st = inspection[i.key];
-      if (st.value === null) return false;
-      if (st.value === false) {
-        return !!(st.descripcion.trim() && st.fotoUrl && !st.fotoUploading && !st.fotoUploadError);
-      }
-      return true;
-    });
+    return sec.items.every(i => isItemComplete(i.key));
   }, [formData, isKmValid, inspection, signature, aceptoEnvio, activeSteps]);
 
   const allComplete = activeSteps.every((_, i) => stepComplete(i));
@@ -224,9 +239,18 @@ export default function ChecklistWizard() {
     }
   };
 
-  const handleGenPhoto = (label: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    setGeneralPhotos(p => ({ ...p, [label]: file }));
+  const handleGenPhoto = async (label: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.files?.[0] ?? null;
+    if (!raw) {
+      setGeneralPhotos(p => ({ ...p, [label]: null }));
+      return;
+    }
+    try {
+      const file = await compressImage(raw);
+      setGeneralPhotos(p => ({ ...p, [label]: file }));
+    } catch {
+      setGeneralPhotos(p => ({ ...p, [label]: raw }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -308,44 +332,22 @@ export default function ChecklistWizard() {
       if (!res.ok) throw new Error(res.error ?? 'Error al guardar inspección');
 
       if (hasBadBlocking) {
-        const hallazgos = activeSections.flatMap(sec =>
-          sec.items
-            .filter(i => inspection[i.key]?.value === false)
-            .map(i => {
-              const st = inspection[i.key];
-              const desc = st.descripcion.trim();
-              return desc ? `${i.label}: ${desc}` : i.label;
-            })
-        );
-        const text = buildNoAptoAlertText({
-          patente: session.vehiculo.patente,
-          responsable: session.trabajador.nombre,
-          resultado: resultadoFinal,
-          kilometraje: currentKm,
-          fecha: formData.fecha,
-          hora: formData.hora,
-          hallazgos,
-        });
-        const subject = `No apta — ${session.vehiculo.patente} — Check ECF 4`;
-        const emailTo = getAlertEmail();
-        const waTo = getAlertWhatsApp();
-        const opened: string[] = [];
-
-        if (emailTo) {
-          openEmailAlert(emailTo, subject, text);
-          opened.push('correo');
-        }
-        if (waTo) {
-          setTimeout(() => openWhatsAppAlert(waTo, text), emailTo ? 450 : 0);
-          opened.push('WhatsApp');
+        let alertSuffix = '';
+        if (res.inspection_id) {
+          const alertRes = await sendNoAptoAlert(res.inspection_id);
+          if (alertRes.ok && alertRes.channels?.length) {
+            alertSuffix = ` Alerta enviada (${alertRes.channels.join(' y ')}).`;
+          } else {
+            alertSuffix = alertRes.error
+              ? ` No se pudo enviar la alerta: ${alertRes.error}`
+              : ' No se pudo enviar la alerta automática.';
+          }
         }
 
         clearCheckSession();
         setStatusMessage({
           type: 'success',
-          text: opened.length
-            ? `Inspección enviada (No apta). Alerta automática: ${opened.join(' y ')}.`
-            : 'Inspección enviada (No apta). Falta configurar destinos de alerta en el servidor.',
+          text: `Inspección enviada (No apta).${alertSuffix}`,
         });
         setCurrentStep(0);
         window.scrollTo(0, 0);
@@ -377,6 +379,7 @@ export default function ChecklistWizard() {
       <div className="session-summary">
         <div><strong>Responsable:</strong> {session.trabajador.nombre}</div>
         <div><strong>Cargo:</strong> {session.trabajador.cargo}</div>
+        <div><strong>RUT:</strong> {session.trabajador.rut}</div>
         <div><strong>Vehículo:</strong> {session.vehiculo.patente} — {session.vehiculo.marca} {session.vehiculo.modelo} ({session.vehiculo.anio})</div>
       </div>
 
@@ -390,7 +393,7 @@ export default function ChecklistWizard() {
             readOnly
             aria-readonly="true"
             className="input-readonly"
-            required
+            tabIndex={-1}
           />
         </div>
         <div className="form-group">
@@ -402,41 +405,13 @@ export default function ChecklistWizard() {
             readOnly
             aria-readonly="true"
             className="input-readonly"
-            required
+            tabIndex={-1}
           />
         </div>
-        <div className="form-group">
-          <label className="form-label">
-            Kilometraje
-            <span className="label-hint">Último: {lastKilometraje?.toLocaleString()}</span>
-          </label>
-          <input type="number" name="kilometraje" value={formData.kilometraje} onChange={handleInput}
-            inputMode="numeric" enterKeyHint="done" placeholder="Ej. 125000"
-            className={!isKmValid ? 'is-invalid' : ''} required />
-          {!isKmValid && formData.kilometraje && (
-            <span className="invalid-feedback">Debe ser mayor a {lastKilometraje?.toLocaleString()}.</span>
-          )}
-        </div>
       </div>
-
-      <div className="form-group full-width">
-        <label className="form-label">
-          Nivel de combustible
-          <span className="label-hint">Opcional</span>
-        </label>
-        <div className="fuel-level-btns" role="group" aria-label="Nivel de combustible">
-          {FUEL_LEVELS.map(level => (
-            <button
-              key={level}
-              type="button"
-              className={`fuel-level-btn ${nivelCombustible === level ? 'active' : ''}`}
-              onClick={() => setNivelCombustible(prev => (prev === level ? '' : level))}
-            >
-              {level}
-            </button>
-          ))}
-        </div>
-      </div>
+      <p className="id-hint" style={{ marginTop: '-.5rem' }}>
+        Fecha y hora se registran automáticamente; no se pueden modificar.
+      </p>
 
       <div className="form-group full-width">
         <div className="gestion-vial-toggle-card">
@@ -489,11 +464,60 @@ export default function ChecklistWizard() {
     </div>
   );
 
-  const renderCheckSection = (sectionId: string) => {
+  const renderOperacion = () => (
+    <div className="step-body">
+      <div className="form-group">
+        <label className="form-label">
+          Kilometraje
+          <span className="label-hint">Último: {lastKilometraje?.toLocaleString()}</span>
+        </label>
+        <input
+          type="number"
+          name="kilometraje"
+          value={formData.kilometraje}
+          onChange={handleInput}
+          inputMode="numeric"
+          enterKeyHint="done"
+          placeholder="Ej. 125000"
+          className={!isKmValid ? 'is-invalid' : ''}
+          required
+        />
+        {!isKmValid && formData.kilometraje && (
+          <span className="invalid-feedback">Debe ser mayor a {lastKilometraje?.toLocaleString()}.</span>
+        )}
+      </div>
+
+      <div className="form-group full-width">
+        <label className="form-label">
+          Nivel de combustible
+          <span className="label-hint">Opcional</span>
+        </label>
+        <div className="fuel-level-btns" role="group" aria-label="Nivel de combustible">
+          {FUEL_LEVELS.map(level => (
+            <button
+              key={level}
+              type="button"
+              className={`fuel-level-btn ${nivelCombustible === level ? 'active' : ''}`}
+              onClick={() => setNivelCombustible(prev => (prev === level ? '' : level))}
+            >
+              {level}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="form-label" style={{ marginTop: '1rem', marginBottom: '.5rem' }}>
+        Testigos de tablero
+      </p>
+      {renderCheckSection('operacion', { bare: true })}
+    </div>
+  );
+
+  const renderCheckSection = (sectionId: string, options?: { bare?: boolean }) => {
     const sec = SECTIONS.find(s => s.id === sectionId);
     if (!sec) return null;
-    return (
-      <div className="step-body">
+    const body = (
+      <>
         {sec.items.map(item => {
           const st = inspection[item.key];
           const isBad = st.value === false;
@@ -542,13 +566,18 @@ export default function ChecklistWizard() {
             </div>
           );
         })}
-      </div>
+      </>
     );
+    if (options?.bare) return body;
+    return <div className="step-body">{body}</div>;
   };
 
   const renderGeneralPhotos = () => (
     <div className="step-body">
-      <p className="gen-photo-hint">Puede omitir fotos. Orden sugerido: izquierda, trasera, derecha y frontal.</p>
+      <p className="gen-photo-hint">
+        Fotos del exterior (opcionales). Se optimizan automáticamente para subir más rápido.
+        Orden: derecha, trasera, izquierda y frontal.
+      </p>
       <div className="gen-photo-grid">
         {GENERAL_PHOTOS.map(label => {
           const file = generalPhotos[label];
@@ -568,12 +597,16 @@ export default function ChecklistWizard() {
           );
         })}
       </div>
+
+      <p className="form-label" style={{ marginTop: '1.25rem', marginBottom: '.5rem' }}>
+        Cintas reflectantes
+      </p>
+      {renderCheckSection('fotos', { bare: true })}
     </div>
   );
 
   const renderClosure = () => {
-    const hasAlertDest =
-      !!getAlertEmail() || !!getAlertWhatsApp();
+    const hasAlertDest = !!(alertChannels?.email || alertChannels?.webhook);
 
     return (
     <div className="step-body">
@@ -598,14 +631,14 @@ export default function ChecklistWizard() {
             Alerta automática a supervisión
           </p>
           <p className="id-hint" style={{ marginBottom: '.5rem' }}>
-            Al enviar esta inspección se abrirá automáticamente correo y/o WhatsApp con el resumen No apta.
+            Al enviar esta inspección se notificará automáticamente a supervisión (sin abrir correo ni WhatsApp).
           </p>
           <div className="alert-channel-row">
-            <span className={`alert-pill ${getAlertEmail() ? 'is-on' : ''}`}>
-              <Mail size={16} /> Correo {getAlertEmail() ? 'listo' : 'no configurado'}
+            <span className={`alert-pill ${alertChannels?.email ? 'is-on' : ''}`}>
+              <Mail size={16} /> Correo {alertChannels?.email ? 'listo' : 'no configurado'}
             </span>
-            <span className={`alert-pill ${getAlertWhatsApp() ? 'is-on' : ''}`}>
-              <MessageCircle size={16} /> WhatsApp {getAlertWhatsApp() ? 'listo' : 'no configurado'}
+            <span className={`alert-pill ${alertChannels?.webhook ? 'is-on' : ''}`}>
+              <Webhook size={16} /> Webhook {alertChannels?.webhook ? 'listo' : 'no configurado'}
             </span>
           </div>
           {!hasAlertDest && (
@@ -641,6 +674,7 @@ export default function ChecklistWizard() {
     const stepId = activeSteps[currentStep].id;
     if (stepId === 'identificacion') return renderIdentification();
     if (stepId === 'fotos') return renderGeneralPhotos();
+    if (stepId === 'operacion') return renderOperacion();
     if (stepId === 'cierre') return renderClosure();
     return renderCheckSection(stepId);
   };
@@ -685,7 +719,7 @@ export default function ChecklistWizard() {
       <main className="step-card">
         <div className="step-card-header">
           <span className="step-card-icon">
-            {currentStep < 2 ? <FileText size={22} /> : sectionIcon(activeSteps[currentStep].id)}
+            {sectionIcon(activeSteps[currentStep].id)}
           </span>
           <h2 className="step-card-title">{activeSteps[currentStep].label}</h2>
           <span className="step-counter">{currentStep + 1} / {activeSteps.length}</span>

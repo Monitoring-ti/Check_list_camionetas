@@ -28,6 +28,18 @@ export interface Section {
 
 export const SECTIONS: Section[] = [
   {
+    id: "fotos",
+    title: "Fotos exterior",
+    icon: "UploadCloud",
+    items: [
+      {
+        key: "cintas_reflectantes",
+        label: "Cintas reflectantes",
+        hint: "Evidencia de cinta faltante, deteriorada o con baja reflectividad en el perímetro del vehículo.",
+      },
+    ],
+  },
+  {
     id: "seguridad_activa",
     title: "Estructura y Seguridad Activa",
     icon: "Shield",
@@ -140,11 +152,6 @@ export const SECTIONS: Section[] = [
         label: "Frenos",
         hint: "Fotografiar disco rayado, pastilla desgastada o pedal sin resistencia.",
       },
-      {
-        key: "tablero_indicadores",
-        label: "Tablero de instrumentos (sin testigos encendidos)",
-        hint: "Fotografiar los testigos encendidos de forma legible.",
-      },
     ],
   },
   {
@@ -194,13 +201,25 @@ export const SECTIONS: Section[] = [
       },
     ],
   },
+  {
+    id: "operacion",
+    title: "Kilometraje y tablero",
+    icon: "Gauge",
+    items: [
+      {
+        key: "tablero_indicadores",
+        label: "Tablero de instrumentos (sin testigos encendidos)",
+        hint: "Fotografiar los testigos encendidos de forma legible.",
+      },
+    ],
+  },
 ];
 
-/** Orden UI: izquierda → trasera → derecha → frontal. Todas opcionales. */
+/** Orden UI: derecha → trasera → izquierda → frontal. Todas opcionales. */
 export const GENERAL_PHOTOS = [
-  "Lateral Izquierdo",
-  "Trasera",
   "Lateral Derecho",
+  "Trasera",
+  "Lateral Izquierdo",
   "Frontal",
 ];
 
@@ -210,15 +229,17 @@ export type FuelLevel = (typeof FUEL_LEVELS)[number];
 
 // ============================================================
 // Pasos del Stepper
+// Flujo: login → id usuario/vehículo → fotos → checklist → km/combustible/tablero → firma
 // ============================================================
 export const STEPS = [
   { id: "identificacion", label: "Identificación" },
+  { id: "fotos", label: "Fotos exterior" },
   { id: "seguridad_activa", label: "Seguridad Activa" },
   { id: "neumaticos", label: "Neumáticos" },
   { id: "visibilidad", label: "Señalización" },
   { id: "emergencia", label: "Emergencia" },
   { id: "mecanica", label: "Mecánica" },
   { id: "gestion_vial", label: "Gestión Vial" },
-  { id: "fotos", label: "Fotos Generales" },
+  { id: "operacion", label: "Km y tablero" },
   { id: "cierre", label: "Cierre y Firma" },
 ];

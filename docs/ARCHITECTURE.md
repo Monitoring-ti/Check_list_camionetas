@@ -46,7 +46,7 @@ supabase/
 | Nueva pantalla / paso UI | `src/components/` + `STEPS` en checklistData |
 | Validación de acceso | RPC en `supabase/` + `AccessGate.tsx` |
 | Campos al guardar inspección | RPC `check_submit_inspection` + payload en `ChecklistWizard.tsx` |
-| Alertas No apta (correo / WhatsApp) | `src/lib/alerts.ts` + env `NEXT_PUBLIC_ALERT_*` |
+| Alertas No apta (correo / webhook) | `src/app/api/alert-no-apto` + `src/lib/alertServer.ts` |
 | Estilos / design system | `src/app/globals.css` (tokens Field Ops Sentinel) |
 | Versionado | `src/lib/version.ts` + `package.json` + `CHANGELOG.md` |
 

@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Camera, CheckCircle, XCircle, MapPin, Loader2 } from 'lucide-react';
+import { compressImage } from '@/lib/compressImage';
 
 interface FaultPhotoProps {
   itemKey: string;
@@ -25,10 +26,10 @@ export default function FaultPhoto({
   const [preview, setPreview] = useState<string | null>(null);
   const [geoTag, setGeoTag] = useState<string>('');
   const [locating, setLocating] = useState(false);
+  const [preparing, setPreparing] = useState(false);
 
   useEffect(() => {
     if (!savedUrl && !preview) return;
-    // Si se limpia desde el padre, resetear preview local
   }, [savedUrl, preview]);
 
   const captureGeo = useCallback((): Promise<string> => {
@@ -57,13 +58,23 @@ export default function FaultPhoto({
   }, []);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
-    const geo = await captureGeo();
-    onPhotoChange(file, geo);
+    const raw = e.target.files?.[0] ?? null;
+    if (!raw) return;
+
+    setPreparing(true);
+    try {
+      const file = await compressImage(raw);
+      const reader = new FileReader();
+      reader.onload = (ev) => setPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+      const geo = await captureGeo();
+      onPhotoChange(file, geo);
+    } catch {
+      const geo = await captureGeo();
+      onPhotoChange(raw, geo);
+    } finally {
+      setPreparing(false);
+    }
   };
 
   const clear = () => {
@@ -74,6 +85,7 @@ export default function FaultPhoto({
   };
 
   const showImage = preview || savedUrl;
+  const busy = locating || uploading || preparing;
 
   return (
     <div className="fault-photo-box">
@@ -86,12 +98,12 @@ export default function FaultPhoto({
               <MapPin size={12} /> {geoTag}
             </div>
           )}
-          {uploading && (
+          {(preparing || uploading) && (
             <p className="fault-upload-status fault-upload-status--pending">
-              <Loader2 size={14} className="spin" /> Guardando foto…
+              <Loader2 size={14} className="spin" /> {preparing ? 'Optimizando foto…' : 'Guardando foto…'}
             </p>
           )}
-          {!uploading && savedUrl && (
+          {!busy && savedUrl && (
             <p className="fault-upload-status fault-upload-status--ok">
               <CheckCircle size={14} /> Foto guardada
             </p>
@@ -99,12 +111,12 @@ export default function FaultPhoto({
           {uploadError && (
             <p className="fault-upload-status fault-upload-status--err">{uploadError}</p>
           )}
-          <button type="button" className="fault-clear" onClick={clear} disabled={uploading}>
+          <button type="button" className="fault-clear" onClick={clear} disabled={busy}>
             <XCircle size={16} /> Cambiar foto
           </button>
         </div>
       ) : (
-        <label className={`fault-upload-btn ${locating ? 'is-busy' : ''}`}>
+        <label className={`fault-upload-btn ${busy ? 'is-busy' : ''}`}>
           <input
             ref={inputRef}
             type="file"
@@ -112,10 +124,10 @@ export default function FaultPhoto({
             capture="environment"
             style={{ display: 'none' }}
             onChange={handleFile}
-            disabled={locating || uploading}
+            disabled={busy}
           />
-          {locating ? (
-            <span>Obteniendo GPS…</span>
+          {busy ? (
+            <span>{preparing ? 'Optimizando…' : locating ? 'Obteniendo GPS…' : 'Guardando…'}</span>
           ) : (
             <>
               <Camera size={18} />

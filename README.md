@@ -2,7 +2,7 @@
 
 Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de administración.**
 
-**Versión:** `1.0.4` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
+**Versión:** `1.0.8` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
 
 ## Qué hace
 
@@ -23,7 +23,27 @@ Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de
 1. SQL en Supabase (ver [supabase/README.md](./supabase/README.md)).
 2. Bucket `vehicle-photos`.
 3. `.env.example` → `.env.local` con URL + anon/publishable key.
-4. `npm install && npm run dev` → http://localhost:3000
+4. Alertas No apta: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL` (ver abajo).
+5. `npm install && npm run dev` → http://localhost:3000
+
+### Alertas No apta (Resend)
+
+Variables **solo servidor** (`.env.local` y Vercel):
+
+| Variable | Descripción |
+|----------|-------------|
+| `SUPABASE_SERVICE_ROLE_KEY` | Mismo proyecto Supabase (Settings → API) |
+| `RESEND_API_KEY` | API key de [resend.com](https://resend.com) |
+| `ALERT_EMAIL` | Destino (default: `joseluis.urra@monitoring.cl`) |
+| `RESEND_FROM` | Remitente verificado (ej. `Monitoring Checklist <alertas@monitoring.cl>`) |
+
+Probar Resend localmente:
+
+```bash
+node scripts/test-resend.mjs
+```
+
+Sin dominio verificado, Resend solo envía al email de tu cuenta de prueba. Verifica `monitoring.cl` en Resend para producción.
 
 ## Rutas
 
@@ -37,7 +57,8 @@ Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de
 
 - Repo: `Monitoring-ti/Check_list_camionetas`
 - **Root Directory:** `.` (raíz)
-- Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL`
+- Opcional: `RESEND_FROM` (dominio verificado en Resend)
 - Prod: https://monitoring-check-campo.vercel.app
 
 ## Seguridad (resumen)
