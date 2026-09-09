@@ -2,7 +2,9 @@
 
 Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de administración.**
 
-**Versión:** `1.0.8` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
+**Versión:** `1.0.9` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md)
+
+**Campo:** https://app.monitoring.lat
 
 ## Qué hace
 
@@ -59,7 +61,18 @@ Sin dominio verificado, Resend solo envía al email de tu cuenta de prueba. Veri
 - **Root Directory:** `.` (raíz)
 - Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL`
 - Opcional: `RESEND_FROM` (dominio verificado en Resend)
-- Prod: https://monitoring-check-campo.vercel.app
+- **Prod (oficial):** https://app.monitoring.lat
+- Alias Vercel: https://monitoring-check-campo.vercel.app
+
+### Dominio `app.monitoring.lat`
+
+Subdominio de `monitoring.lat` (DNS en Hostinger) apuntando a este proyecto Vercel:
+
+| DNS (Hostinger) | Valor |
+|-----------------|-------|
+| CNAME `app` | `cname.vercel-dns.com` (o el host que muestre Vercel) |
+
+No desplegar esta app en Hostinger. GitHub → Vercel; Hostinger solo DNS.
 
 ## Seguridad (resumen)
 

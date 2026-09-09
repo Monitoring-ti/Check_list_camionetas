@@ -1,8 +1,9 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Monitoring Check Campo (Check ECF 4)  
-**Versión:** 1.0.8  
-**Uso:** Inspección preoperacional de camionetas en terreno
+**Versión:** 1.0.9  
+**Uso:** Inspección preoperacional de camionetas en terreno  
+**Dirección:** https://app.monitoring.lat
 
 ---
 
@@ -31,7 +32,7 @@ No incluye administración de flota ni historial: eso se consulta en el sistema 
 
 ## 3. Inicio
 
-1. Abra la dirección de la aplicación (la que le entregue Monitoring).
+1. Abra **https://app.monitoring.lat** (o el enlace que le entregue Monitoring).
 2. En la pantalla de bienvenida pulse **Comenzar inspección**.
 
 ---

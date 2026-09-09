@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { APP_VERSION } from '@/lib/version';
+import { APP_VERSION, PRODUCTION_ORIGIN } from '@/lib/version';
 import PwaRegister from '@/components/PwaRegister';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(PRODUCTION_ORIGIN),
   title: `Check ECF 4 v${APP_VERSION} — Monitoring`,
   description: 'Inspección técnica de camionetas en terreno',
   robots: {

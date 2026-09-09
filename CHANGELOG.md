@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.9 — 2026-09-09
+
+- Producción en **https://app.monitoring.lat** (subdominio de `monitoring.lat` → Vercel)
+- Alias interno: `monitoring-check-campo.vercel.app`
+
 ## 1.0.8 — 2026-07-21
 
 - En fotos exterior: ítem **Cintas reflectantes** (Sí/No) con evidencia si es No
