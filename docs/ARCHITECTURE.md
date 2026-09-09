@@ -2,6 +2,8 @@
 
 App de campo (Next.js) para inspecciones ECF 4. **Sin admin.** Admin: repo `consulta_camionetas`.
 
+**Producción:** https://app.monitoring.lat — DNS CNAME en Hostinger (`app` de `monitoring.lat`) hacia Vercel. Código en GitHub; runtime en Vercel. No clonar ni servir esta app en Hostinger.
+
 ## Mapa del código
 
 ```
