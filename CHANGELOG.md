@@ -4,6 +4,7 @@
 
 - Producción en **https://app.monitoring.lat** (subdominio de `monitoring.lat` → Vercel)
 - Alias interno: `monitoring-check-campo.vercel.app`
+- [Manual del administrador](./docs/MANUAL_ADMINISTRADOR.md) (altas, alertas No apta, DNS/Vercel)
 
 ## 1.0.8 — 2026-07-21
 

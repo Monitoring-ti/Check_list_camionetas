@@ -179,4 +179,4 @@ Ante altas de personal/vehículos, errores de patente o dudas del proceso, conta
 
 ---
 
-*Documento orientado al inspector en terreno. Detalle técnico: [ARCHITECTURE.md](./ARCHITECTURE.md).*
+*Documento orientado al inspector en terreno. Administradores: [MANUAL_ADMINISTRADOR.md](./MANUAL_ADMINISTRADOR.md). Detalle técnico: [ARCHITECTURE.md](./ARCHITECTURE.md).*
