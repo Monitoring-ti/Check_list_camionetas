@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.26 — 2026-09-15
+
+- RPC `check_submit_inspection` guarda detalles en `is_good` (ya no usa la columna `respuesta`)
+- Footer: contacto `ti.soporte@monitoring.cl`
+
 ## 1.0.9 — 2026-09-09
 
 - Producción en **https://app.monitoring.lat** (subdominio de `monitoring.lat` → Vercel)

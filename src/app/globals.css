@@ -92,7 +92,7 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
 }
 .welcome-title {
   font-size: clamp(1.5rem, 6vw, 1.85rem); font-weight: 700;
-  text-transform: uppercase; line-height: 1.2; color: var(--blue); max-width: 16ch;
+  text-transform: uppercase; line-height: 1.2; color: var(--blue); max-width: 22ch;
 }
 .welcome-accent { width: 48px; height: 4px; border-radius: 2px; background: var(--orange); }
 .welcome-subtitle { font-size: 1rem; color: var(--text-muted); max-width: 28ch; line-height: 1.55; }
@@ -103,6 +103,11 @@ input, select, textarea { font-family: inherit; font-size: 16px; }
   font-size: .75rem; color: var(--grey); font-weight: 600;
   letter-spacing: .04em; text-transform: uppercase;
 }
+.welcome-support {
+  text-transform: none; letter-spacing: 0; font-weight: 500;
+  color: var(--text-muted); text-decoration: none;
+}
+.welcome-support:hover { color: var(--blue); text-decoration: underline; }
 .welcome-sync {
   display: inline-flex; align-items: center; gap: .35rem;
   text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text-muted);

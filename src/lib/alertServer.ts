@@ -54,7 +54,7 @@ async function loadNoAptoInspection(inspectionId: string) {
     hallazgos,
   });
 
-  const subject = `No apta — ${inspection.patente} — Check ECF 4`;
+  const subject = `No apta — ${inspection.patente} — Check Flota Monitoring`;
 
   return { inspection, subject, text };
 }
