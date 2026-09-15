@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Check ECF 4',
-    short_name: 'Check ECF 4',
+    name: 'Check Flota Monitoring',
+    short_name: 'Check Flota',
     description: 'Inspección técnica de camionetas en terreno',
     start_url: '/check',
     display: 'standalone',

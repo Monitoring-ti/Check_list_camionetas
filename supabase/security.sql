@@ -221,7 +221,23 @@ BEGIN
       v_detail->>'seccion',
       v_detail->>'item_key',
       v_detail->>'item_label',
-      (v_detail->>'is_good')::boolean,
+      coalesce(
+        (nullif(v_detail->>'is_good', ''))::boolean,
+        CASE lower(coalesce(v_detail->>'respuesta', ''))
+          WHEN 'true' THEN true
+          WHEN 't' THEN true
+          WHEN '1' THEN true
+          WHEN 'si' THEN true
+          WHEN 'sí' THEN true
+          WHEN 'ok' THEN true
+          WHEN 'false' THEN false
+          WHEN 'f' THEN false
+          WHEN '0' THEN false
+          WHEN 'no' THEN false
+          ELSE NULL
+        END,
+        false
+      ),
       nullif(v_detail->>'descripcion', ''),
       nullif(v_detail->>'foto_url', ''),
       nullif(v_detail->>'geotag', ''),

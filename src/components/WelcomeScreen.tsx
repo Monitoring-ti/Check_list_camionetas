@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChevronRight, Radio } from 'lucide-react';
-import { APP_VERSION } from '@/lib/version';
+import { APP_NAME, APP_VERSION, SUPPORT_EMAIL } from '@/lib/version';
 
 export default function WelcomeScreen() {
   return (
@@ -18,7 +18,7 @@ export default function WelcomeScreen() {
       </div>
 
       <div className="welcome-hero">
-        <h1 className="welcome-title">Inspección de camionetas</h1>
+        <h1 className="welcome-title">{APP_NAME}</h1>
         <div className="welcome-accent" aria-hidden />
         <p className="welcome-subtitle">
           Sistema de gestión de activos y monitoreo preventivo de flota.
@@ -33,6 +33,9 @@ export default function WelcomeScreen() {
 
       <footer className="welcome-footer">
         <span className="welcome-version">Versión {APP_VERSION}</span>
+        <a className="welcome-support" href={`mailto:${SUPPORT_EMAIL}`}>
+          {SUPPORT_EMAIL}
+        </a>
         <span className="welcome-sync">
           <Radio size={14} aria-hidden /> Terminal lista
         </span>

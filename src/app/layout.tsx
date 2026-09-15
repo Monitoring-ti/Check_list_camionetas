@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
-import { APP_VERSION, PRODUCTION_ORIGIN } from '@/lib/version';
+import { APP_NAME, APP_VERSION, PRODUCTION_ORIGIN } from '@/lib/version';
 import PwaRegister from '@/components/PwaRegister';
 import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(PRODUCTION_ORIGIN),
-  title: `Check ECF 4 v${APP_VERSION} — Monitoring`,
+  title: `${APP_NAME} v${APP_VERSION}`,
   description: 'Inspección técnica de camionetas en terreno',
   robots: {
     index: false,
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
       noimageindex: true,
     },
   },
-  applicationName: 'Check ECF 4',
+  applicationName: APP_NAME,
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Check ECF 4',
+    title: APP_NAME,
   },
   icons: {
     icon: [
