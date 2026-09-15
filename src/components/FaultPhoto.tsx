@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { Camera, CheckCircle, XCircle, MapPin, Loader2 } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { CheckCircle, XCircle, MapPin, Loader2 } from 'lucide-react';
 import { compressImage } from '@/lib/compressImage';
+import PhotoPicker from '@/components/PhotoPicker';
 
 interface FaultPhotoProps {
   itemKey: string;
@@ -22,15 +23,10 @@ export default function FaultPhoto({
   uploadError = null,
   onPhotoChange,
 }: FaultPhotoProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [geoTag, setGeoTag] = useState<string>('');
   const [locating, setLocating] = useState(false);
   const [preparing, setPreparing] = useState(false);
-
-  useEffect(() => {
-    if (!savedUrl && !preview) return;
-  }, [savedUrl, preview]);
 
   const captureGeo = useCallback((): Promise<string> => {
     return new Promise((resolve) => {
@@ -57,10 +53,7 @@ export default function FaultPhoto({
     });
   }, []);
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.files?.[0] ?? null;
-    if (!raw) return;
-
+  const handleFile = async (raw: File) => {
     setPreparing(true);
     try {
       const file = await compressImage(raw);
@@ -81,7 +74,6 @@ export default function FaultPhoto({
     setPreview(null);
     setGeoTag('');
     onPhotoChange(null, '');
-    if (inputRef.current) inputRef.current.value = '';
   };
 
   const showImage = preview || savedUrl;
@@ -116,26 +108,17 @@ export default function FaultPhoto({
           </button>
         </div>
       ) : (
-        <label className={`fault-upload-btn ${busy ? 'is-busy' : ''}`}>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            style={{ display: 'none' }}
-            onChange={handleFile}
-            disabled={busy}
-          />
+        <div className={`fault-upload-btn ${busy ? 'is-busy' : ''}`}>
           {busy ? (
             <span>{preparing ? 'Optimizando…' : locating ? 'Obteniendo GPS…' : 'Guardando…'}</span>
           ) : (
             <>
-              <Camera size={18} />
-              <span>Tomar foto del hallazgo</span>
-              <span className="fault-required">Obligatorio</span>
+              <p className="fault-upload-title">Foto del hallazgo <span className="fault-required">Obligatorio</span></p>
+              <PhotoPicker disabled={busy} onFile={file => { void handleFile(file); }} />
+              <p className="fault-upload-tip">Si la cámara no dispara, use Galería (puede fotografiar con la app del celular y elegirla).</p>
             </>
           )}
-        </label>
+        </div>
       )}
     </div>
   );

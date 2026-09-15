@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Check Flota Monitoring  
-**Versión:** 0.26  
+**Versión:** 0.27  
 **Uso:** Inspección preoperacional de camionetas en terreno  
 **Dirección:** https://app.monitoring.lat
 
@@ -95,7 +95,8 @@ En cada ítem elija:
 Si marca **No**:
 
 1. Escriba una **descripción** del hallazgo (obligatorio).
-2. Tome una **foto** (obligatorio). Espere el mensaje **Foto guardada**.
+2. Adjunte una **foto** (obligatorio): **Cámara** o **Galería**. Espere **Foto guardada**.
+   Si la cámara abre y no dispara, use **Galería** (puede tomar la foto con la app de cámara del celular y elegirla).
 3. Si el ítem es **bloqueante**, el resultado final será **No apta**.
 
 Ítems bloqueantes (ejemplos): frenos, estado neumáticos, luces de freno, cinturones, dirección.
@@ -160,6 +161,7 @@ Una falla en un ítem no bloqueante queda registrada, pero no cambia sola el res
 | No avanza al siguiente paso | Complete campos marcados; en hallazgos espere “Foto guardada” |
 | No se puede enviar | Firme, acepte la declaración y revise pasos incompletos |
 | Foto no guarda | Permita cámara y reintente; verifique internet |
+| La cámara abre y no dispara | Use **Galería**. En Xiaomi, Huawei, Oppo y algunos Samsung es habitual; no es de todas las marcas |
 | App pide de nuevo RUT y patente | Sesión vencida o inválida; vuelva a identificarse |
 | Kilometraje rechazado | Debe ser mayor al último valor del vehículo |
 

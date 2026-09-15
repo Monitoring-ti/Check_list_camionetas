@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.27 — 2026-09-15
+
+- Fotos: botones **Cámara** y **Galería** (hallazgos y exterior) para celulares donde la cámara abre y no dispara
+- El selector de archivo ya no usa `display:none` (rompe el retorno de la foto en varios Android)
+- Compresión más tolerante: type vacío de cámara y fallback si `createImageBitmap` falla
+
 ## 0.26 — 2026-09-15
 
 - Nombre: **Check Flota Monitoring** (https://app.monitoring.lat)

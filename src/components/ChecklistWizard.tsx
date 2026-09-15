@@ -20,6 +20,7 @@ import {
 } from '@/lib/checkSession';
 import SignatureCanvas from '@/components/SignatureCanvas';
 import FaultPhoto from '@/components/FaultPhoto';
+import PhotoPicker from '@/components/PhotoPicker';
 import AppHeader from '@/components/AppHeader';
 import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
 import { compressImage } from '@/lib/compressImage';
@@ -239,12 +240,7 @@ export default function ChecklistWizard() {
     }
   };
 
-  const handleGenPhoto = async (label: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.files?.[0] ?? null;
-    if (!raw) {
-      setGeneralPhotos(p => ({ ...p, [label]: null }));
-      return;
-    }
+  const handleGenPhoto = async (label: string, raw: File) => {
     try {
       const file = await compressImage(raw);
       setGeneralPhotos(p => ({ ...p, [label]: file }));
@@ -575,17 +571,15 @@ export default function ChecklistWizard() {
   const renderGeneralPhotos = () => (
     <div className="step-body">
       <p className="gen-photo-hint">
-        Fotos del exterior (opcionales). Se optimizan automáticamente para subir más rápido.
-        Orden: derecha, trasera, izquierda y frontal.
+        Fotos del exterior (opcionales). Use <strong>Cámara</strong> o <strong>Galería</strong> si el disparo no funciona.
+        Se optimizan solas. Orden: derecha, trasera, izquierda y frontal.
       </p>
       <div className="gen-photo-grid">
         {GENERAL_PHOTOS.map(label => {
           const file = generalPhotos[label];
           const previewUrl = file ? URL.createObjectURL(file) : null;
           return (
-            <label key={label} className={`gen-photo-card ${file ? 'has-file' : ''}`}>
-              <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
-                onChange={e => handleGenPhoto(label, e)} />
+            <div key={label} className={`gen-photo-card ${file ? 'has-file' : ''}`}>
               {previewUrl ? (
                 <img src={previewUrl} alt={label} className="gen-photo-preview" />
               ) : (
@@ -593,7 +587,8 @@ export default function ChecklistWizard() {
               )}
               <span className="gen-photo-label">{label}</span>
               {file ? <span className="gen-photo-ok">✓ Cargada</span> : <span className="gen-photo-req">Opcional</span>}
-            </label>
+              <PhotoPicker compact onFile={picked => { void handleGenPhoto(label, picked); }} />
+            </div>
           );
         })}
       </div>
