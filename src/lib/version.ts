@@ -2,7 +2,7 @@
 export const APP_NAME = 'Check Flota Monitoring';
 
 /** Versión de la app de campo — actualizar en cada release */
-export const APP_VERSION = '0.27';
+export const APP_VERSION = '0.28';
 
 /** Correo de soporte mostrado en el footer */
 export const SUPPORT_EMAIL = 'ti.soporte@monitoring.cl';

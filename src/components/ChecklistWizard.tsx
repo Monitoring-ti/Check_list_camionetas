@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   Shield, CircleDot, Eye, AlertOctagon, Wrench, Truck, Gauge,
   CheckCircle, AlertTriangle, Send, UploadCloud,
-  FileText, ChevronRight, ChevronLeft, Check, XCircle, Mail, Webhook
+  FileText, ChevronRight, ChevronLeft, Check, XCircle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -24,11 +24,7 @@ import PhotoPicker from '@/components/PhotoPicker';
 import AppHeader from '@/components/AppHeader';
 import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
 import { compressImage } from '@/lib/compressImage';
-import {
-  fetchAlertChannelStatus,
-  sendNoAptoAlert,
-  type AlertChannelStatus,
-} from '@/lib/alerts';
+import { sendNoAptoAlert } from '@/lib/alerts';
 
 interface ItemState {
   value: boolean | null;
@@ -98,7 +94,6 @@ export default function ChecklistWizard() {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [alertChannels, setAlertChannels] = useState<AlertChannelStatus | null>(null);
 
   useEffect(() => {
     const s = getCheckSession();
@@ -108,10 +103,6 @@ export default function ChecklistWizard() {
     }
     setSession(s);
   }, [router]);
-
-  useEffect(() => {
-    fetchAlertChannelStatus().then(setAlertChannels);
-  }, []);
 
   const activeSteps = STEPS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
   const activeSections = SECTIONS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
@@ -328,22 +319,18 @@ export default function ChecklistWizard() {
       if (!res.ok) throw new Error(res.error ?? 'Error al guardar inspección');
 
       if (hasBadBlocking) {
-        let alertSuffix = '';
         if (res.inspection_id) {
-          const alertRes = await sendNoAptoAlert(res.inspection_id);
-          if (alertRes.ok && alertRes.channels?.length) {
-            alertSuffix = ` Alerta enviada (${alertRes.channels.join(' y ')}).`;
-          } else {
-            alertSuffix = alertRes.error
-              ? ` No se pudo enviar la alerta: ${alertRes.error}`
-              : ' No se pudo enviar la alerta automática.';
+          try {
+            await sendNoAptoAlert(res.inspection_id);
+          } catch (alertErr) {
+            console.error(alertErr);
           }
         }
 
         clearCheckSession();
         setStatusMessage({
           type: 'success',
-          text: `Inspección enviada (No apta).${alertSuffix}`,
+          text: 'Inspección enviada (No apta). El vehículo no debe operar hasta revisión.',
         });
         setCurrentStep(0);
         window.scrollTo(0, 0);
@@ -600,10 +587,7 @@ export default function ChecklistWizard() {
     </div>
   );
 
-  const renderClosure = () => {
-    const hasAlertDest = !!(alertChannels?.email || alertChannels?.webhook);
-
-    return (
+  const renderClosure = () => (
     <div className="step-body">
       {hasBadBlocking ? (
         <div className="resultado-noapto">
@@ -617,30 +601,6 @@ export default function ChecklistWizard() {
         <div className="resultado-apto">
           <CheckCircle size={24} />
           <strong>Apta</strong>
-        </div>
-      )}
-
-      {hasBadBlocking && (
-        <div className="alert-channels">
-          <p className="form-label" style={{ marginBottom: '.35rem' }}>
-            Alerta automática a supervisión
-          </p>
-          <p className="id-hint" style={{ marginBottom: '.5rem' }}>
-            Al enviar esta inspección se notificará automáticamente a supervisión (sin abrir correo ni WhatsApp).
-          </p>
-          <div className="alert-channel-row">
-            <span className={`alert-pill ${alertChannels?.email ? 'is-on' : ''}`}>
-              <Mail size={16} /> Correo {alertChannels?.email ? 'listo' : 'no configurado'}
-            </span>
-            <span className={`alert-pill ${alertChannels?.webhook ? 'is-on' : ''}`}>
-              <Webhook size={16} /> Webhook {alertChannels?.webhook ? 'listo' : 'no configurado'}
-            </span>
-          </div>
-          {!hasAlertDest && (
-            <p className="fault-warning" style={{ marginTop: '.5rem' }}>
-              <AlertTriangle size={14} /> Aún no hay destinos configurados en el servidor.
-            </p>
-          )}
         </div>
       )}
 
@@ -662,8 +622,7 @@ export default function ChecklistWizard() {
         </label>
       </div>
     </div>
-    );
-  };
+  );
 
   const renderStepContent = () => {
     const stepId = activeSteps[currentStep].id;

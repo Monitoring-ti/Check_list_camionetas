@@ -30,21 +30,6 @@ export function buildNoAptoAlertText(p: NoAptoAlertPayload): string {
   ].join('\n');
 }
 
-export interface AlertChannelStatus {
-  email: boolean;
-  webhook: boolean;
-}
-
-export async function fetchAlertChannelStatus(): Promise<AlertChannelStatus> {
-  try {
-    const res = await fetch('/api/alert-no-apto');
-    if (!res.ok) return { email: false, webhook: false };
-    return (await res.json()) as AlertChannelStatus;
-  } catch {
-    return { email: false, webhook: false };
-  }
-}
-
 export async function sendNoAptoAlert(inspectionId: string): Promise<{
   ok: boolean;
   channels?: string[];

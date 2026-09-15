@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dispatchNoAptoAlert, getAlertChannelStatus } from '@/lib/alertServer';
-
-export async function GET() {
-  return NextResponse.json(getAlertChannelStatus());
-}
+import { dispatchNoAptoAlert } from '@/lib/alertServer';
 
 export async function POST(request: Request) {
   let body: { inspectionId?: string };

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.28 — 2026-09-15
+
+- Cierre No apta: el inspector ya no ve si correo o webhook (n8n) están configurados
+- El envío no muestra errores técnicos de alerta; las notificaciones siguen en el servidor
+
 ## 0.27 — 2026-09-15
 
 - Fotos: botones **Cámara** y **Galería** (hallazgos y exterior) para celulares donde la cámara abre y no dispara

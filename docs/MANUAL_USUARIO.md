@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Check Flota Monitoring  
-**Versión:** 0.27  
+**Versión:** 0.28  
 **Uso:** Inspección preoperacional de camionetas en terreno  
 **Dirección:** https://app.monitoring.lat
 
@@ -123,7 +123,7 @@ Justo **antes** de firmar:
 ### 5.5 Cierre y firma
 
 1. Revise el resultado: **Apta** o **No apta**.
-2. Si es **No apta**, al enviar el sistema **notifica automáticamente** a supervisión por correo o webhook (según configuración del servidor). No se abre el cliente de correo en el teléfono.
+2. Si es **No apta**, el vehículo **no debe operar** hasta revisión.
 3. Observaciones (opcional).
 4. **Firma digital** en el recuadro (obligatorio). Use **Limpiar** si necesita rehacerla.
 5. Marque la casilla de declaración de veracidad.

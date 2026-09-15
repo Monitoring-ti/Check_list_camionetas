@@ -1,6 +1,6 @@
 # Manual del administrador — Check List Camionetas
 
-**Aplicación de campo:** Check Flota Monitoring v0.27  
+**Aplicación de campo:** Check Flota Monitoring v0.28  
 **URL para inspectores:** https://app.monitoring.lat  
 **Panel de flota / historial:** sistema de administración `consulta_camionetas` (otro producto)
 
@@ -119,7 +119,7 @@ Cadena correcta: **GitHub → Vercel**. Hostinger **solo DNS** del subdominio. N
 - Alias: `https://monitoring-check-campo.vercel.app`
 - Un push a `main` republica Production.
 
-Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.27).
+Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.28).
 
 Variables en Vercel (Production y Preview):  
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, más las de alertas de la sección 5. Mismo proyecto Supabase que `consulta_camionetas`.
