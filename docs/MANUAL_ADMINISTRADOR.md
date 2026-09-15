@@ -1,6 +1,6 @@
 # Manual del administrador — Check List Camionetas
 
-**Aplicación de campo:** Monitoring Check Campo (Check ECF 4) v1.0.9  
+**Aplicación de campo:** Check Flota Monitoring v0.26  
 **URL para inspectores:** https://app.monitoring.lat  
 **Panel de flota / historial:** sistema de administración `consulta_camionetas` (otro producto)
 

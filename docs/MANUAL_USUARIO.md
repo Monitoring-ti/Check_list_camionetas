@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
-**Aplicación:** Monitoring Check Campo (Check ECF 4)  
-**Versión:** 1.0.9  
+**Aplicación:** Check Flota Monitoring  
+**Versión:** 0.26  
 **Uso:** Inspección preoperacional de camionetas en terreno  
 **Dirección:** https://app.monitoring.lat
 

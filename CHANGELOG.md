@@ -2,8 +2,10 @@
 
 ## 0.26 — 2026-09-15
 
-- RPC `check_submit_inspection` guarda detalles en `is_good` (ya no usa la columna `respuesta`)
+- Nombre: **Check Flota Monitoring** (https://app.monitoring.lat)
 - Footer: contacto `ti.soporte@monitoring.cl`
+- RPC `check_submit_inspection` guarda detalles en `is_good` (ya no usa la columna `respuesta`)
+- SQL `20260915_fix_details_respuesta` aplicado en Supabase; envío de inspecciones OK en producción
 
 ## 1.0.9 — 2026-09-09
 

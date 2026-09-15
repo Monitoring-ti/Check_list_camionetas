@@ -8,7 +8,7 @@ Proyecto compartido con `consulta_camionetas`. Ejecutar en el **SQL Editor** en 
 | 2 | `harden_anon.sql` | Revoca acceso directo de `anon` a tablas; fuerza RLS |
 | 3 | `close_storage_list.sql` | Quita listado de Storage por API para anon |
 
-Migraciones incrementales: carpeta `migrations/` (ej. `nivel_combustible`, `fix_details_respuesta`).
+Migraciones incrementales: carpeta `migrations/` (ej. `nivel_combustible`, `fix_details_respuesta` — aplicada en producción el 2026-09-15).
 
 ## RPCs usadas por la app
 
