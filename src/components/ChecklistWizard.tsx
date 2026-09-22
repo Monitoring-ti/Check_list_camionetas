@@ -614,20 +614,6 @@ export default function ChecklistWizard() {
         <SignatureCanvas onSignatureChange={setSignature} />
         {!signature && <span className="invalid-feedback">La firma es obligatoria.</span>}
       </div>
-      <div className="acepto-box">
-        <input type="checkbox" id="acepto-envio" checked={aceptoEnvio}
-          onChange={e => setAceptoEnvio(e.target.checked)} className="acepto-checkbox" />
-        <label htmlFor="acepto-envio" className="acepto-label">
-          Declaro que los datos registrados son verídicos.
-        </label>
-      </div>
-      <div className="acepto-box">
-        <input type="checkbox" id="confirma-aptitud" checked={confirmaAptitud}
-          onChange={e => setConfirmaAptitud(e.target.checked)} className="acepto-checkbox" />
-        <label htmlFor="confirma-aptitud" className="acepto-label">
-          {APTITUD_CONDUCIR_LABEL}
-        </label>
-      </div>
     </div>
   );
 
@@ -688,6 +674,24 @@ export default function ChecklistWizard() {
 
         <form onSubmit={handleSubmit}>
           {renderStepContent()}
+          {isLastStep ? (
+            <div className="declaraciones">
+              <div className="acepto-box acepto-box--aptitud">
+                <input type="checkbox" id="confirma-aptitud" checked={confirmaAptitud}
+                  onChange={e => setConfirmaAptitud(e.target.checked)} className="acepto-checkbox" />
+                <label htmlFor="confirma-aptitud" className="acepto-label">
+                  {APTITUD_CONDUCIR_LABEL}
+                </label>
+              </div>
+              <div className="acepto-box">
+                <input type="checkbox" id="acepto-envio" checked={aceptoEnvio}
+                  onChange={e => setAceptoEnvio(e.target.checked)} className="acepto-checkbox" />
+                <label htmlFor="acepto-envio" className="acepto-label">
+                  Declaro que los datos registrados son verídicos.
+                </label>
+              </div>
+            </div>
+          ) : null}
           <div className="step-nav">
             <button type="button" className="btn btn-outline"
               onClick={() => setCurrentStep(p => p - 1)} disabled={currentStep === 0}>
