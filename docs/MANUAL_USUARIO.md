@@ -126,10 +126,11 @@ Justo **antes** de firmar:
 2. Si es **No apta**, el vehículo **no debe operar** hasta revisión.
 3. Observaciones (opcional).
 4. **Firma digital** en el recuadro (obligatorio). Use **Limpiar** si necesita rehacerla.
-5. Marque la casilla de declaración de veracidad.
-6. Pulse **Enviar inspección**.
+5. Marque que los datos son verídicos.
+6. Marque que confirma **condiciones psicológicas y físicas adecuadas para conducir**.
+7. Pulse **Enviar inspección**.
 
-Al confirmar verá un mensaje de éxito. Si su RUT tiene correo en Monitoring, puede llegar **INSPECCIÓN CAMIONETA** (noreply) con el detalle (B/M, sin fotos) y un botón para **solicitar el reporte completo** en PDF.
+Al confirmar verá un mensaje de éxito. Si su RUT tiene correo en Monitoring, llega **INSPECCIÓN CAMIONETA** (desde Check Flota Monitoring / `no-reply@monitoring.lat`) con el detalle (B/M, sin fotos) y un botón para **solicitar el reporte completo** en PDF. Si aparece en spam, márquelo como “No es spam” una vez.
 
 ---
 

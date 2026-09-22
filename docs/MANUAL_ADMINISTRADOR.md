@@ -106,7 +106,9 @@ Si no llega el mail:
 
 ### Confirmación al inspector
 
-Después de cada envío, el servidor intenta mandar **INSPECCIÓN CAMIONETA {patente}** al correo del mismo RUT (`trabajadores`). Remitente **`no-reply@monitoring.lat`** (SMTP Hostinger). Reply-To: `ti.soporte@monitoring.cl`. Si ese RUT no tiene correo, no se envía.
+Después de cada envío, el servidor intenta mandar **INSPECCIÓN CAMIONETA {patente}** al correo del mismo RUT (`trabajadores`: `email_corporativo`, si no `email_personal`). Remitente **Check Flota Monitoring** `<no-reply@monitoring.lat>` (SMTP Hostinger). Reply-To: `ti.soporte@monitoring.cl`. Si ese RUT no tiene correo, no se envía.
+
+En DNS de `monitoring.lat` ya están SPF (`include:_spf.mail.hostinger.com`), DKIM Hostinger y DMARC `p=none`. Si el mail cae en spam: el inspector lo marca **No es spam** y/o agrega el remitente a contactos. No toque el CNAME `app` ni los nameservers.
 
 ---
 
@@ -124,7 +126,7 @@ Cadena correcta: **GitHub → Vercel**. Hostinger **solo DNS** del subdominio. N
 - Alias: `https://monitoring-check-campo.vercel.app`
 - Un push a `main` republica Production.
 
-Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.31).
+Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.34).
 
 Variables en Vercel (Production y Preview):  
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, más las de alertas de la sección 5. Mismo proyecto Supabase que `consulta_camionetas`.

@@ -10,6 +10,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import {
   SECTIONS, GENERAL_PHOTOS, STEPS, BLOCKING_ITEMS, FUEL_LEVELS,
+  APTITUD_CONDUCIR_LABEL,
   type FuelLevel,
 } from '@/lib/checklistData';
 import {
@@ -90,6 +91,7 @@ export default function ChecklistWizard() {
   });
   const [signature, setSignature] = useState<string | null>(null);
   const [aceptoEnvio, setAceptoEnvio] = useState(false);
+  const [confirmaAptitud, setConfirmaAptitud] = useState(false);
   const [includeGestionVial, setIncludeGestionVial] = useState(false);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -139,11 +141,11 @@ export default function ChecklistWizard() {
       if (!(formData.kilometraje && isKmValid)) return false;
       return isItemComplete('tablero_indicadores');
     }
-    if (step.id === 'cierre') return !!signature && aceptoEnvio;
+    if (step.id === 'cierre') return !!signature && aceptoEnvio && confirmaAptitud;
     const sec = SECTIONS.find(s => s.id === step.id);
     if (!sec) return true;
     return sec.items.every(i => isItemComplete(i.key));
-  }, [formData, isKmValid, inspection, signature, aceptoEnvio, activeSteps]);
+  }, [formData, isKmValid, inspection, signature, aceptoEnvio, confirmaAptitud, activeSteps]);
 
   const allComplete = activeSteps.every((_, i) => stepComplete(i));
 
@@ -297,7 +299,9 @@ export default function ChecklistWizard() {
         kilometraje: currentKm,
         marca_modelo: `${session.vehiculo.marca} ${session.vehiculo.modelo}`,
         anio: session.vehiculo.anio,
-        observaciones: formData.observaciones,
+        observaciones: [formData.observaciones.trim(), APTITUD_CONDUCIR_LABEL]
+          .filter(Boolean)
+          .join('\n\n'),
         resultado: resultadoFinal,
         firma_url: firmaUrl,
         foto_frontal: genUrls['Frontal'] ?? null,
@@ -615,6 +619,13 @@ export default function ChecklistWizard() {
           onChange={e => setAceptoEnvio(e.target.checked)} className="acepto-checkbox" />
         <label htmlFor="acepto-envio" className="acepto-label">
           Declaro que los datos registrados son verídicos.
+        </label>
+      </div>
+      <div className="acepto-box">
+        <input type="checkbox" id="confirma-aptitud" checked={confirmaAptitud}
+          onChange={e => setConfirmaAptitud(e.target.checked)} className="acepto-checkbox" />
+        <label htmlFor="confirma-aptitud" className="acepto-label">
+          {APTITUD_CONDUCIR_LABEL}
         </label>
       </div>
     </div>
