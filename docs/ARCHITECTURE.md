@@ -40,7 +40,8 @@ supabase/
 1. `/check` → RPC `check_validate_access(rut, patente)` → token de sesión
 2. Wizard → fotos de hallazgo se suben **al tomarlas** (`uploadPhoto` → `vehicle-photos/hallazgos/`)
 3. Enviar → RPC `check_submit_inspection(token, payload)` con URLs ya guardadas
-4. Admin lee inspecciones con **service_role** (otro repo)
+4. Confirmación al correo del RUT (`POST /api/inspection-receipt`); si es No apta, alerta a supervisión
+5. Admin lee inspecciones con **service_role** (otro repo)
 
 ## Cómo agregar funciones nuevas
 
@@ -51,6 +52,8 @@ supabase/
 | Validación de acceso | RPC en `supabase/` + `AccessGate.tsx` |
 | Campos al guardar inspección | RPC `check_submit_inspection` + payload en `ChecklistWizard.tsx` |
 | Alertas No apta (correo / webhook) | `src/app/api/alert-no-apto` + `src/lib/alertServer.ts` |
+| Confirmación al inspector | `src/app/api/inspection-receipt` + `src/lib/inspectionReceipt.ts` |
+| Reporte PDF | `src/app/reporte` + `src/app/api/inspection-report` |
 | Estilos / design system | `src/app/globals.css` (tokens Field Ops Sentinel) |
 | Versionado | `src/lib/version.ts` + `package.json` + `CHANGELOG.md` |
 

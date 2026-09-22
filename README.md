@@ -2,7 +2,7 @@
 
 Checklist ECF 4 / SIGO para inspección de camionetas en terreno. **Sin panel de administración.**
 
-**Versión:** `0.28` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md) · [Manual del administrador](./docs/MANUAL_ADMINISTRADOR.md)
+**Versión:** `0.31` · [Changelog](./CHANGELOG.md) · [Arquitectura](./docs/ARCHITECTURE.md) · [Manual de usuario](./docs/MANUAL_USUARIO.md) · [Manual del administrador](./docs/MANUAL_ADMINISTRADOR.md)
 
 **Campo:** https://app.monitoring.lat
 
@@ -37,7 +37,7 @@ Variables **solo servidor** (`.env.local` y Vercel):
 | `SUPABASE_SERVICE_ROLE_KEY` | Mismo proyecto Supabase (Settings → API) |
 | `RESEND_API_KEY` | API key de [resend.com](https://resend.com) |
 | `ALERT_EMAIL` | Destino (default: `joseluis.urra@monitoring.cl`) |
-| `RESEND_FROM` | Remitente verificado (ej. `Monitoring Checklist <alertas@monitoring.cl>`) |
+| `RESEND_FROM` | Remitente: `Check <noreply@app.monitoring.lat>` |
 
 Probar Resend localmente:
 

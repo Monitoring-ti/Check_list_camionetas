@@ -35,7 +35,7 @@ loadEnvLocal();
 
 const apiKey = process.env.RESEND_API_KEY?.trim();
 const to = (process.env.ALERT_EMAIL ?? 'ti.soporte@monitoring.cl').trim();
-const from = (process.env.RESEND_FROM ?? 'Monitoring Checklist <onboarding@resend.dev>').trim();
+const from = (process.env.RESEND_FROM ?? 'Check <noreply@app.monitoring.lat>').trim();
 
 if (!apiKey) {
   console.error('Falta RESEND_API_KEY en .env.local');

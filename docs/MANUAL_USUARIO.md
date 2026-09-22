@@ -1,7 +1,7 @@
 # Manual de usuario — Check List Camionetas
 
 **Aplicación:** Check Flota Monitoring  
-**Versión:** 0.28  
+**Versión:** 0.31  
 **Uso:** Inspección preoperacional de camionetas en terreno  
 **Dirección:** https://app.monitoring.lat
 
@@ -129,7 +129,7 @@ Justo **antes** de firmar:
 5. Marque la casilla de declaración de veracidad.
 6. Pulse **Enviar inspección**.
 
-Al confirmar verá un mensaje de éxito. Luego volverá a la pantalla de identificación para una nueva inspección.
+Al confirmar verá un mensaje de éxito. Si su RUT tiene correo en Monitoring, puede llegar **INSPECCIÓN CAMIONETA** (noreply) con el detalle (B/M, sin fotos) y un botón para **solicitar el reporte completo** en PDF.
 
 ---
 

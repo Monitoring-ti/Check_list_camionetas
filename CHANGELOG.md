@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.32 — 2026-09-22
+
+- Correo al inspector por SMTP Hostinger (`no-reply@monitoring.lat`), sin Resend
+- Reply-To: `ti.soporte@monitoring.cl`
+
+## 0.31 — 2026-09-21
+
+- Correo al inspector estilo check: remitente **noreply**, asunto **INSPECCIÓN CAMIONETA {patente}**
+- Cuerpo: situación final (Vehículo Operativo / No Operativo), identificación, conductor, ítems B/M
+- Sigue el enlace para PDF; Reply-To a `ti.soporte@monitoring.cl`
+
+## 0.30 — 2026-09-21
+
+- Correo de confirmación desde `ti.soporte@monitoring.cl`, asunto **Estado operativo de vehículo**
+- Cuerpo con el detalle de la inspección (sin fotos) y enlace **Solicitar reporte completo**
+- PDF con marca Monitoring y checklist; el enlace abre una página (Gmail no dispara el PDF al previsualizar)
+
+## 0.29 — 2026-09-21
+
+- Tras enviar (Apta o No apta), confirmación por correo al inspector: el mail asociado al RUT del check
+- Sin correo en `trabajadores` o fallo de Resend: no se bloquea el envío ni se avisa en pantalla
+- Plantilla resumen (hallazgos en No); HTML/adjuntos se iteran después
+
 ## 0.28 — 2026-09-15
 
 - Cierre No apta: el inspector ya no ve si correo o webhook (n8n) están configurados

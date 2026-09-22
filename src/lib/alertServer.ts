@@ -1,4 +1,5 @@
 import { buildNoAptoAlertText } from '@/lib/alerts';
+import { sendResendEmail } from '@/lib/resend';
 import { createSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 const DEFAULT_ALERT_EMAIL = 'ti.soporte@monitoring.cl';
@@ -60,24 +61,7 @@ async function loadNoAptoInspection(inspectionId: string) {
 }
 
 async function sendEmailAlert(to: string, subject: string, text: string): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  if (!apiKey) throw new Error('RESEND_API_KEY no configurada');
-
-  const from = (process.env.RESEND_FROM ?? 'Monitoring Checklist <onboarding@resend.dev>').trim();
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ from, to: [to], subject, text }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Resend ${res.status}: ${body}`);
-  }
+  await sendResendEmail({ to, subject, text });
 }
 
 async function sendWebhookAlert(payload: Record<string, unknown>): Promise<void> {

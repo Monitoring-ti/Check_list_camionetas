@@ -43,3 +43,19 @@ export async function sendNoAptoAlert(inspectionId: string): Promise<{
 
   return res.json();
 }
+
+/** Confirmación al correo del RUT. El API no revela si se envió. */
+export async function sendInspectionReceipt(
+  inspectionId: string,
+  sessionToken: string
+): Promise<void> {
+  try {
+    await fetch('/api/inspection-receipt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inspectionId, sessionToken }),
+    });
+  } catch {
+    // El envío de la inspección ya fue exitoso.
+  }
+}

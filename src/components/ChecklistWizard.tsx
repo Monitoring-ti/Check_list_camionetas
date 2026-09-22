@@ -24,7 +24,7 @@ import PhotoPicker from '@/components/PhotoPicker';
 import AppHeader from '@/components/AppHeader';
 import { uploadVehiclePhoto } from '@/lib/uploadPhoto';
 import { compressImage } from '@/lib/compressImage';
-import { sendNoAptoAlert } from '@/lib/alerts';
+import { sendInspectionReceipt } from '@/lib/alerts';
 
 interface ItemState {
   value: boolean | null;
@@ -318,15 +318,11 @@ export default function ChecklistWizard() {
       const res = data as SubmitInspectionResponse;
       if (!res.ok) throw new Error(res.error ?? 'Error al guardar inspección');
 
-      if (hasBadBlocking) {
-        if (res.inspection_id) {
-          try {
-            await sendNoAptoAlert(res.inspection_id);
-          } catch (alertErr) {
-            console.error(alertErr);
-          }
-        }
+      if (res.inspection_id) {
+        await sendInspectionReceipt(res.inspection_id, session.sessionToken);
+      }
 
+      if (hasBadBlocking) {
         clearCheckSession();
         setStatusMessage({
           type: 'success',

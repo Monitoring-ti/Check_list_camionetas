@@ -1,6 +1,6 @@
 # Manual del administrador — Check List Camionetas
 
-**Aplicación de campo:** Check Flota Monitoring v0.28  
+**Aplicación de campo:** Check Flota Monitoring v0.31  
 **URL para inspectores:** https://app.monitoring.lat  
 **Panel de flota / historial:** sistema de administración `consulta_camionetas` (otro producto)
 
@@ -91,10 +91,11 @@ Configuración (Vercel → Environment Variables, no en el celular):
 | Variable | Obligatorio para correo | Notas |
 |----------|-------------------------|--------|
 | `SUPABASE_SERVICE_ROLE_KEY` | Sí (verifica la inspección) | **Nunca** en el frontend ni en un chat |
-| `RESEND_API_KEY` | Sí | Cuenta Resend |
-| `ALERT_EMAIL` | Sí | Destino (p. ej. `ti.soporte@monitoring.cl`) |
-| `RESEND_FROM` | Recomendado en prod | Remitente con dominio verificado |
-| `ALERT_WEBHOOK_URL` | No | Slack / Teams / Make / n8n |
+| `SMTP_HOST` | Sí | `smtp.hostinger.com` |
+| `SMTP_PORT` | Sí | `465` |
+| `SMTP_USER` | Sí | `no-reply@monitoring.lat` |
+| `SMTP_PASS` | Sí | Contraseña de esa casilla |
+| `MAIL_FROM` | Sí | `Check <no-reply@monitoring.lat>` |
 
 Si no llega el mail:
 
@@ -102,6 +103,10 @@ Si no llega el mail:
 2. En Resend, revise logs. Sin dominio verificado, Resend solo entrega al correo de la cuenta de prueba.
 3. Confirme `ALERT_EMAIL` y `RESEND_FROM` en Vercel (Production).
 4. Prueba de TI: `node scripts/test-resend.mjs` en un entorno con esas variables.
+
+### Confirmación al inspector
+
+Después de cada envío, el servidor intenta mandar **INSPECCIÓN CAMIONETA {patente}** al correo del mismo RUT (`trabajadores`). Remitente **`no-reply@monitoring.lat`** (SMTP Hostinger). Reply-To: `ti.soporte@monitoring.cl`. Si ese RUT no tiene correo, no se envía.
 
 ---
 
@@ -119,7 +124,7 @@ Cadena correcta: **GitHub → Vercel**. Hostinger **solo DNS** del subdominio. N
 - Alias: `https://monitoring-check-campo.vercel.app`
 - Un push a `main` republica Production.
 
-Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.28).
+Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.31).
 
 Variables en Vercel (Production y Preview):  
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, más las de alertas de la sección 5. Mismo proyecto Supabase que `consulta_camionetas`.
