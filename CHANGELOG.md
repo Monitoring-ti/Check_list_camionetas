@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.34 — 2026-09-22
+
+- Cierre: casilla obligatoria de aptitud psicológica y física para conducir (queda en observaciones, mail y PDF)
+- Entregabilidad: remitente “Check Flota Monitoring”, sin texto noreply en el cuerpo
+
+## 0.33 — 2026-09-22
+
+- SMTP: reintento 465/587 (Vercel a veces bloquea un puerto) y timeouts
+- Correo del inspector: `email_corporativo` y luego `email_personal` (no usa mails de auditoría HR)
+
 ## 0.32 — 2026-09-22
 
 - Correo al inspector por SMTP Hostinger (`no-reply@monitoring.lat`), sin Resend

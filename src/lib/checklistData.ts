@@ -231,6 +231,10 @@ export type FuelLevel = (typeof FUEL_LEVELS)[number];
 // Pasos del Stepper
 // Flujo: login → id usuario/vehículo → fotos → checklist → km/combustible/tablero → firma
 // ============================================================
+/** Declaración obligatoria en el cierre (aptitud para conducir). */
+export const APTITUD_CONDUCIR_LABEL =
+  'Confirmo condiciones psicológicas y físicas adecuadas para conducir.';
+
 export const STEPS = [
   { id: "identificacion", label: "Identificación" },
   { id: "fotos", label: "Fotos exterior" },

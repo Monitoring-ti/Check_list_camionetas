@@ -615,12 +615,19 @@ input:focus, select:focus, textarea:focus {
 
 /* ─── Accept ────────────────────────────────────────────── */
 .acepto-box {
-  display: flex; align-items: center; gap: .75rem;
+  display: flex; align-items: flex-start; gap: .75rem;
   padding: 1rem 1.25rem; background: #f3f4f6; border: 1px solid var(--border);
-  border-radius: var(--r-lg); margin-top: 1rem; min-height: 64px;
+  border-radius: var(--r-lg); margin-top: 0; min-height: 64px;
 }
-.acepto-checkbox { width: auto !important; transform: scale(1.35); cursor: pointer; flex-shrink: 0; }
-.acepto-label { font-size: .95rem; font-weight: 500; color: var(--text); cursor: pointer; }
+.acepto-checkbox { width: auto !important; transform: scale(1.35); cursor: pointer; flex-shrink: 0; margin-top: .2rem; }
+.acepto-label { font-size: .95rem; font-weight: 500; color: var(--text); cursor: pointer; line-height: 1.35; }
+.declaraciones {
+  display: flex; flex-direction: column; gap: .75rem;
+  padding: 0 1.35rem 1rem;
+}
+.acepto-box--aptitud {
+  background: #eef0ff; border-color: #c5cae8;
+}
 
 /* ─── Buttons / Nav ─────────────────────────────────────── */
 .step-nav {

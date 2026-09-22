@@ -3,6 +3,7 @@ import { sendMail, isSmtpConfigured } from '@/lib/mail';
 import { normalizePatente } from '@/lib/patente';
 import { signInspectionReportToken } from '@/lib/reportToken';
 import { operativoLabel } from '@/lib/inspectionPdf';
+import { APTITUD_CONDUCIR_LABEL } from '@/lib/checklistData';
 import { PRODUCTION_ORIGIN, SUPPORT_EMAIL } from '@/lib/version';
 
 function appOrigin(): string {
@@ -15,7 +16,16 @@ function appOrigin(): string {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const EMAIL_KEYS = ['email', 'correo', 'correo_electronico', 'email_corporativo', 'mail'];
+const EMAIL_KEYS = [
+  'email_corporativo',
+  'email_personal',
+  'email',
+  'correo',
+  'correo_electronico',
+  'mail',
+];
+
+const SKIP_EMAIL_KEYS = /^(actualizado_por_email|autorizado_por_email)$/i;
 
 function looksLikeEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
@@ -27,6 +37,7 @@ export function emailFromTrabajadorRow(row: Record<string, unknown>): string | n
     if (typeof v === 'string' && looksLikeEmail(v)) return v.trim();
   }
   for (const [key, v] of Object.entries(row)) {
+    if (SKIP_EMAIL_KEYS.test(key)) continue;
     if (!/(email|correo|mail)/i.test(key)) continue;
     if (typeof v === 'string' && looksLikeEmail(v)) return v.trim();
   }
@@ -113,6 +124,19 @@ function formatDetailsHtml(details: DetailRow[]): string {
   return parts.join('');
 }
 
+function splitObservaciones(obs: string | null): { notas: string | null; aptitud: boolean } {
+  const raw = (obs ?? '').trim();
+  if (!raw) return { notas: null, aptitud: false };
+  const aptitud = raw.includes(APTITUD_CONDUCIR_LABEL);
+  const notas = raw
+    .split(/\n+/)
+    .map(l => l.trim())
+    .filter(l => l && l !== APTITUD_CONDUCIR_LABEL)
+    .join('\n')
+    .trim();
+  return { notas: notas || null, aptitud };
+}
+
 export function buildInspectionReceipt(params: {
   resultado: string;
   fecha: string;
@@ -135,10 +159,11 @@ export function buildInspectionReceipt(params: {
   const fechaUi = formatFechaDisplay(params.fecha);
   const fechaHora = `${params.fecha} ${params.hora}`.trim();
   const detalle = formatDetailsText(params.details);
+  const { notas, aptitud } = splitObservaciones(params.observaciones);
 
   const text = [
-    'check',
-    `INSPECCIÓN CAMIONETA ${patente}`,
+    'Check Flota Monitoring',
+    `Inspección camioneta ${patente}`,
     fechaHora,
     '',
     'SITUACION FINAL VEHICULO',
@@ -159,7 +184,8 @@ export function buildInspectionReceipt(params: {
     `RUT\t${params.rut}`,
     params.cargo ? `Cargo\t${params.cargo}` : '',
     'Empresa\tMONITORING',
-    params.observaciones ? `\nObservaciones\t${params.observaciones}` : '',
+    aptitud ? `Aptitud para conducir\t${APTITUD_CONDUCIR_LABEL}` : '',
+    notas ? `\nObservaciones\t${notas}` : '',
     '',
     detalle,
     '',
@@ -171,8 +197,8 @@ export function buildInspectionReceipt(params: {
   const html = `
     <div style="font-family:Arial,Helvetica,sans-serif;color:#191c1e;max-width:640px">
       <div style="background:#142275;color:#fff;padding:16px 20px">
-        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85">check</div>
-        <div style="font-size:18px;font-weight:700">INSPECCIÓN CAMIONETA ${escapeHtml(patente)}</div>
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85">Check Flota Monitoring</div>
+        <div style="font-size:18px;font-weight:700">Inspección camioneta ${escapeHtml(patente)}</div>
         <div style="font-size:13px;margin-top:6px;opacity:.9">${escapeHtml(fechaHora)}</div>
       </div>
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d1d5db;border-top:0">
@@ -191,7 +217,8 @@ export function buildInspectionReceipt(params: {
         ${kvRow('RUT', params.rut)}
         ${params.cargo ? kvRow('Cargo', params.cargo) : ''}
         ${kvRow('Empresa', 'MONITORING')}
-        ${params.observaciones ? kvRow('Observaciones', params.observaciones) : ''}
+        ${aptitud ? kvRow('Aptitud para conducir', APTITUD_CONDUCIR_LABEL) : ''}
+        ${notas ? kvRow('Observaciones', notas) : ''}
         ${formatDetailsHtml(params.details)}
       </table>
       ${estado === 'No apta' ? '<p style="color:#b91c1c;padding:0 8px"><strong>El vehículo no debe operar hasta revisión.</strong></p>' : ''}
@@ -201,7 +228,7 @@ export function buildInspectionReceipt(params: {
           Solicitar reporte completo
         </a>
       </p>
-      <p style="font-size:12px;color:#454651;padding:0 8px">PDF con logo y detalle. Sin fotografías. Este correo es automático (noreply).</p>
+      <p style="font-size:12px;color:#454651;padding:0 8px">PDF con logo y detalle. Sin fotografías. Monitoring — ${escapeHtml(SUPPORT_EMAIL)}</p>
     </div>
   `.trim();
 
@@ -221,7 +248,7 @@ export function sampleInspectionReceipt(reportUrl = 'http://localhost:3000/repor
     marcaModelo: 'Toyota Hilux',
     kilometraje: 84210,
     combustible: '3/4',
-    observaciones: null,
+    observaciones: APTITUD_CONDUCIR_LABEL,
     details: [
       { seccion: 'Fotos exterior', item_label: 'Cintas reflectantes', is_good: true, descripcion: null },
       { seccion: 'Estructura y Seguridad Activa', item_label: 'Airbags (frontales y laterales)', is_good: true, descripcion: null },
@@ -331,4 +358,6 @@ export async function dispatchInspectionReceipt(
   });
 
   await sendMail({ to, subject, text, html, replyTo: SUPPORT_EMAIL });
+  const domain = to.includes('@') ? to.split('@').pop() : '?';
+  console.info(`[inspection-receipt] enviado dominio=${domain}`);
 }

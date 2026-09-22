@@ -1,4 +1,5 @@
 import PDFDocument from 'pdfkit';
+import { APTITUD_CONDUCIR_LABEL } from '@/lib/checklistData';
 import { SUPPORT_EMAIL } from '@/lib/version';
 
 const NAVY = '#142275';
@@ -79,11 +80,24 @@ export function buildInspectionPdf(data: InspectionPdfData): Promise<Buffer> {
     ].filter(Boolean);
     doc.text(meta.join('\n'));
 
-    if (data.observaciones) {
+    if (data.observaciones?.includes(APTITUD_CONDUCIR_LABEL)) {
+      doc.moveDown(0.8);
+      doc.fillColor(MUTED).fontSize(9).font('Helvetica').text('Aptitud para conducir', { underline: true });
+      doc.moveDown(0.2);
+      doc.fillColor('#191c1e').fontSize(10).text(APTITUD_CONDUCIR_LABEL);
+    }
+
+    const notas = (data.observaciones ?? '')
+      .split(/\n+/)
+      .map(l => l.trim())
+      .filter(l => l && l !== APTITUD_CONDUCIR_LABEL)
+      .join('\n')
+      .trim();
+    if (notas) {
       doc.moveDown(0.8);
       doc.fillColor(MUTED).fontSize(9).font('Helvetica').text('Observaciones', { underline: true });
       doc.moveDown(0.2);
-      doc.fillColor('#191c1e').fontSize(10).text(data.observaciones);
+      doc.fillColor('#191c1e').fontSize(10).text(notas);
     }
 
     doc.moveDown(0.8);
