@@ -344,10 +344,11 @@ export default function ChecklistWizard() {
       }
     } catch (err) {
       console.error(err);
-      setStatusMessage({
-        type: 'error',
-        text: err instanceof Error ? err.message : 'Error al enviar. Verifique su conexión.',
-      });
+      const raw = err instanceof Error ? err.message : '';
+      const text = /row-level security|violates/i.test(raw)
+        ? 'No se pudo guardar la foto o la firma. Reintente con conexión estable.'
+        : raw || 'Error al enviar. Verifique su conexión.';
+      setStatusMessage({ type: 'error', text });
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getCheckSession } from '@/lib/checkSession';
 import { compressImage } from '@/lib/compressImage';
 
 function extensionFor(file: File): string {
@@ -11,22 +11,33 @@ function extensionFor(file: File): string {
   return 'jpg';
 }
 
-/** Sube evidencia al bucket y devuelve URL pública. Comprime fotos (no firmas). */
+function friendlyUploadError(raw: string): string {
+  if (/row-level security|violates|permission|jwt|403|401/i.test(raw)) {
+    return 'No se pudo guardar la foto. Reintente con conexión estable.';
+  }
+  if (raw.startsWith('Error al subir foto:')) return friendlyUploadError(raw.slice(21));
+  return raw || 'No se pudo guardar la foto. Reintente con conexión estable.';
+}
+
+/** Sube evidencia al bucket (vía API con sesión) y devuelve URL pública. */
 export async function uploadVehiclePhoto(
   folder: 'hallazgos' | 'general' | 'firmas',
   baseName: string,
   file: File
 ): Promise<string> {
-  const toUpload =
-    folder === 'firmas' ? file : await compressImage(file);
+  const toUpload = folder === 'firmas' ? file : await compressImage(file);
+  const sessionToken = getCheckSession()?.sessionToken ?? '';
 
-  const ext = extensionFor(toUpload);
-  const path = `${folder}/${baseName}.${ext}`;
-  const { error } = await supabase.storage.from('vehicle-photos').upload(path, toUpload, {
-    upsert: false,
-    contentType: toUpload.type || `image/${ext === 'jpg' ? 'jpeg' : ext}`,
-  });
-  if (error) throw new Error(`Error al subir foto: ${error.message}`);
-  const { data } = supabase.storage.from('vehicle-photos').getPublicUrl(path);
-  return data.publicUrl;
+  const body = new FormData();
+  body.append('file', toUpload, toUpload.name || `foto.${extensionFor(toUpload)}`);
+  body.append('folder', folder);
+  body.append('baseName', baseName);
+  body.append('sessionToken', sessionToken);
+
+  const res = await fetch('/api/upload-photo', { method: 'POST', body });
+  const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+  if (!res.ok || !data.url) {
+    throw new Error(friendlyUploadError(data.error ?? `HTTP ${res.status}`));
+  }
+  return data.url;
 }

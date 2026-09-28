@@ -38,7 +38,7 @@ supabase/
 ## Flujo de datos
 
 1. `/check` → RPC `check_validate_access(rut, patente)` → token de sesión
-2. Wizard → fotos de hallazgo se suben **al tomarlas** (`uploadPhoto` → `vehicle-photos/hallazgos/`)
+2. Wizard → fotos (hallazgo al tomarlas; general y firma al enviar) vía `POST /api/upload-photo` → `vehicle-photos/`
 3. Enviar → RPC `check_submit_inspection(token, payload)` con URLs ya guardadas
 4. Confirmación al correo del RUT (`POST /api/inspection-receipt`); si es No apta, alerta a supervisión
 5. Admin lee inspecciones con **service_role** (otro repo)

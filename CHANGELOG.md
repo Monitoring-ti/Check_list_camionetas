@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.35 — 2026-09-28
+
+- Envío: las fotos y la firma se suben por el servidor (evita el error de RLS de Storage)
+- Mensaje al inspector si falla la foto, sin texto técnico de Postgres
+
 ## 0.34 — 2026-09-22
 
 - Cierre: casilla obligatoria de aptitud psicológica y física para conducir (queda en observaciones, mail y PDF)
