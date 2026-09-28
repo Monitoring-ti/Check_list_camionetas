@@ -18,4 +18,4 @@ Migraciones incrementales: carpeta `migrations/` (ej. `nivel_combustible`, `fix_
 ## Storage
 
 Bucket: `vehicle-photos`  
-Prefijos permitidos para upload anon: `hallazgos/`, `general/`, `firmas/`
+Prefijos: `hallazgos/`, `general/`, `firmas/`. Desde v0.35 el upload lo hace el servidor (service role). `migrations/20260928_storage_insert_policy.sql` recrea la política de anon por si queda algún cliente viejo.

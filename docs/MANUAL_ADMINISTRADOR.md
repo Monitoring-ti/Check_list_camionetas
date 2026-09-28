@@ -126,7 +126,7 @@ Cadena correcta: **GitHub → Vercel**. Hostinger **solo DNS** del subdominio. N
 - Alias: `https://monitoring-check-campo.vercel.app`
 - Un push a `main` republica Production.
 
-Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.34).
+Tras un release, compruebe en el pie de bienvenida la **versión** (hoy 0.35).
 
 Variables en Vercel (Production y Preview):  
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, más las de alertas de la sección 5. Mismo proyecto Supabase que `consulta_camionetas`.
@@ -152,7 +152,7 @@ Detalle de SQL y bucket: [supabase/README.md](../supabase/README.md). Mapa técn
 | Enlace abre Vercel y cambia la URL | El dominio custom debe estar en **Connect to environment**, no redirect |
 | Nadie puede entrar (todos) | Supabase caído, env vars mal en Vercel, o RPCs no aplicadas |
 | Solo una persona no entra | Trabajador / vehículo en admin |
-| Fotos no suben | Permiso de cámara, internet, bucket `vehicle-photos` y políticas de upload |
+| Fotos no suben | Permiso de cámara, internet, `SUPABASE_SERVICE_ROLE_KEY` en Vercel, bucket `vehicle-photos` |
 | Cámara abre y no dispara (algunos Android) | En la app hay **Galería** como alternativa; no es un fallo de Storage |
 | No llega mail No apta | Sección 5 |
 | Versión vieja en pantalla | Deploy de Vercel pendiente o caché; recargar; confirmar `main` |
