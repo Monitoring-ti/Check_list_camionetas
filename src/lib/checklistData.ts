@@ -9,6 +9,9 @@ export const BLOCKING_ITEMS = new Set([
   "Luces de freno",
 ]);
 
+/** Kit minero / Gestión Vial: desactivado hasta nuevo aviso. */
+export const GESTION_VIAL_ENABLED = false;
+
 // ============================================================
 // Secciones ECF 4 / SIGO
 // Cada ítem: { key, label, hint }

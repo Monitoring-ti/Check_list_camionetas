@@ -70,7 +70,7 @@ Se muestran responsable, cargo, RUT y vehículo (solo lectura).
 | Campo | Editable | Notas |
 |-------|----------|--------|
 | Fecha / Hora | No | Automáticas; no se pueden cambiar |
-| Inspección Gestión Vial | Sí | Active el interruptor solo si aplica faena / requisitos adicionales |
+| Inspección kit minero (Gestión Vial) | No | Interruptor desactivado; no forma parte del check |
 
 ### 5.2 Fotos exterior
 
@@ -108,7 +108,7 @@ Secciones habituales:
 3. Señalización (visibilidad)  
 4. Emergencia  
 5. Mecánica (frenos)  
-6. Gestión Vial *(solo si la activó al inicio)*
+6. Gestión Vial *(desactivada)*
 
 ### 5.4 Kilometraje, combustible y tablero
 
