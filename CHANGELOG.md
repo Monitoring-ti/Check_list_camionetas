@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.6.0 — 2026-10-08
+
+- Identificación: el interruptor de inspección kit minero (Gestión Vial) queda desactivado
+
 ## 0.35 — 2026-09-28
 
 - Envío: las fotos y la firma se suben por el servidor (evita el error de RLS de Storage)

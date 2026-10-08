@@ -10,7 +10,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import {
   SECTIONS, GENERAL_PHOTOS, STEPS, BLOCKING_ITEMS, FUEL_LEVELS,
-  APTITUD_CONDUCIR_LABEL,
+  APTITUD_CONDUCIR_LABEL, GESTION_VIAL_ENABLED,
   type FuelLevel,
 } from '@/lib/checklistData';
 import {
@@ -93,6 +93,7 @@ export default function ChecklistWizard() {
   const [aceptoEnvio, setAceptoEnvio] = useState(false);
   const [confirmaAptitud, setConfirmaAptitud] = useState(false);
   const [includeGestionVial, setIncludeGestionVial] = useState(false);
+  const gestionVialOn = GESTION_VIAL_ENABLED && includeGestionVial;
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -106,8 +107,8 @@ export default function ChecklistWizard() {
     setSession(s);
   }, [router]);
 
-  const activeSteps = STEPS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
-  const activeSections = SECTIONS.filter(s => s.id !== 'gestion_vial' || includeGestionVial);
+  const activeSteps = STEPS.filter(s => s.id !== 'gestion_vial' || gestionVialOn);
+  const activeSections = SECTIONS.filter(s => s.id !== 'gestion_vial' || gestionVialOn);
 
   const lastKilometraje = session?.vehiculo.km_actual ?? null;
   const currentKm = Number(formData.kilometraje);
@@ -398,16 +399,21 @@ export default function ChecklistWizard() {
       </p>
 
       <div className="form-group full-width">
-        <div className="gestion-vial-toggle-card">
+        <div className={`gestion-vial-toggle-card ${GESTION_VIAL_ENABLED ? '' : 'is-disabled'}`}>
           <div className="toggle-info">
             <Truck size={24} className="text-primary" />
             <div>
-              <strong>Inspección de Gestión Vial</strong>
-              <p>Requisitos adicionales de faena minera (aire, GPS, carga, etc.)</p>
+              <strong>Inspección kit minero</strong>
+              <p>
+                {GESTION_VIAL_ENABLED
+                  ? 'Requisitos adicionales de faena minera (aire, GPS, carga, etc.)'
+                  : 'No disponible por ahora.'}
+              </p>
             </div>
           </div>
           <div className="toggle-switch">
-            <input type="checkbox" id="gv-toggle" checked={includeGestionVial}
+            <input type="checkbox" id="gv-toggle" checked={gestionVialOn}
+              disabled={!GESTION_VIAL_ENABLED}
               onChange={e => setIncludeGestionVial(e.target.checked)} />
             <label htmlFor="gv-toggle"></label>
           </div>
@@ -444,6 +450,8 @@ export default function ChecklistWizard() {
         }
         .toggle-switch input:checked + label { background: var(--orange); }
         .toggle-switch input:checked + label:before { transform: translateX(24px); }
+        .toggle-switch input:disabled + label { cursor: not-allowed; opacity: .55; }
+        .gestion-vial-toggle-card.is-disabled { opacity: .65; border-left-color: var(--border); }
       ` }} />
     </div>
   );
